@@ -4,6 +4,8 @@ Recorded September 27, 2026.
 
 September 28 follow-up: [Mechanics And 3D Proposal](MECHANICS-AND-3D-PROPOSAL.md) develops the controls, teaching sequence, curriculum connection, and shared opening. The teacher now requests 3D with camera movement; the earlier dimensionality question below is historical. The follow-up also records the established laptop target and worksheet-after-game direction. Its new mechanics remain proposals for discussion.
 
+September 28 cargo decision: the teacher accepted [colorful foam packing rings on pallets](MECHANICS-AND-3D-PROPOSAL.md#colorful-foam-rings-and-pallets), including the direction of visibly splitting whole rings into fractional layers. The block/crate wording in this original record is historical; use the updated proposal for the current visual direction. Other undecided mechanics remain proposals.
+
 > Status: exploratory concept record. These notes preserve the brainstorming discussion, not an approved specification, roadmap, release scope, deadline, or instruction to begin implementation. Merging this document records the ideas; it does not commit to building every suggestion.
 
 ## Purpose and Project Boundary
