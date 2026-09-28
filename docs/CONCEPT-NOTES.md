@@ -2,6 +2,8 @@
 
 Recorded September 27, 2026.
 
+September 28 follow-up: [Mechanics And 3D Proposal](MECHANICS-AND-3D-PROPOSAL.md) develops the controls, teaching sequence, curriculum connection, and shared opening. The teacher now requests 3D with camera movement; the earlier dimensionality question below is historical. The follow-up also records the established laptop target and worksheet-after-game direction. Its new mechanics remain proposals for discussion.
+
 > Status: exploratory concept record. These notes preserve the brainstorming discussion, not an approved specification, roadmap, release scope, deadline, or instruction to begin implementation. Merging this document records the ideas; it does not commit to building every suggestion.
 
 ## Purpose and Project Boundary
