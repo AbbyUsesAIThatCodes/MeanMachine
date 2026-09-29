@@ -1,8 +1,10 @@
 # Mean Machine
 
-A proposed educational factory game for exploring the arithmetic mean through equal sharing.
+A proposed educational factory game for exploring the arithmetic mean by sharing colorful foam packing rings equally among pallets.
 
 **Status: Concept Refinement.** No playable application or approved implementation roadmap is included yet.
+
+**Chosen Cargo:** Big, stackable foam rings on wooden pallets, accepted September 28, 2026. Programmatic color and a small collection of raised/recessed surface patterns vary independently. Rings divide into equal, labeled layers with especially bouncy squash and stretch, overshoot, and settling; ordinary transfers have a smaller bounce. See [Colorful Foam Rings And Pallets](docs/MECHANICS-AND-3D-PROPOSAL.md#colorful-foam-rings-and-pallets) for the shared Mean Machine/Median Depot direction and the rules for preserving quantity.
 
 Start with the [Mechanics And 3D Proposal](docs/MECHANICS-AND-3D-PROPOSAL.md), recorded September 28, 2026. It describes a proposed round, controls, fractional equal sharing, curriculum evidence, and the shared factory introduction with Median Depot. It distinguishes confirmed teacher direction from new recommendations.
 
