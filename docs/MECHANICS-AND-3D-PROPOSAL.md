@@ -14,13 +14,34 @@ The original Mean Machine concept supplies the equal-sharing premise, distinct i
 
 The teacher proposed stackable goods with open space and distinctive silhouettes so individual items remain easy to see. Preserve that purpose through the rings' holes, contours, restrained spacing, outlines, and shadows. Avoid stacks that merge visually into a solid tower. Use a consistent footprint and whole-ring size across colors; one whole ring is one unit of cargo.
 
-Give every incoming group its own color plus a repeated symbol. Rings and all pieces split from them keep that original identity as they move between pallets. Mixed colors are expected after equal sharing. A pallet identifies one observation, while a loading bay identifies its location. An explicit zero still has a visible empty pallet and tag; it counts as an observation.
+Give every incoming group a consistent color, surface pattern, and repeated symbol. Rings and all pieces split from them keep that original identity as they move between pallets. Mixed colors and patterns are expected after equal sharing. A pallet identifies one observation, while a loading bay identifies its location. An explicit zero still has a visible empty pallet and tag; it counts as an observation.
+
+### Independent Color And Surface Relief
+
+**Accepted Refinement, September 28, 2026:** Rings must be stackable, receive their colors programmatically, and offer a handful of topographical textures. Color and surface pattern are independent properties: any supported color can be applied to any pattern without requiring a separate model for each combination.
+
+Use actual raised or recessed surface relief with broad features visible from the normal gameplay camera. The proposed starting collection is **Smooth**, **Ribbed**, **Grooved**, and **Studded**. Smooth provides the baseline; ribs, grooves, and rounded studs supply distinct tactile-looking surfaces. The exact profiles and especially the studded version require visual review on thin fractional layers before final acceptance as assets.
+
+Keep the top and bottom contact faces flat and the nominal footprint and whole-ring thickness consistent across the collection. Texture identifies an original group; it does not encode additional quantity. Vertical ribs and grooves are promising because they remain recognizable after horizontal slicing. Preserve the equal-layer geometry described below: relief must not make equal-thickness pieces represent unequal portions of a whole. Simplify or replace a pattern if it cannot meet that requirement.
+
+Assign each original group its appearance when creating the shipment and retain it during movement, splitting, reset, and replay. A half or third inherits its parent's color, surface pattern, and symbol. Do not recolor or replace its texture according to the destination pallet. Keep symbols and text available alongside color and relief.
 
 ### Fractional Rings And Cartoon Motion
 
-Show a whole ring being divided into equal layers through its thickness. Each layer keeps the original footprint, central hole, color, and symbol. Half layers have half the original thickness; third layers have one third. Use a consistent cross-section so equal layers represent equal portions of the original ring. Display a clear fraction marking such as **1/2** or **1/3** and retain accessible text labels.
+Show a whole ring being divided into equal layers through its thickness. Each layer keeps the original footprint, central hole, color, surface pattern, and symbol. Half layers have half the original thickness; third layers have one third. Use a consistent cross-section so equal layers represent equal portions of the original ring. Display a clear fraction marking such as **1/2** or **1/3** and retain accessible text labels.
 
-The recommended animation lifts a whole ring onto a small dividing platform, gently compresses it with a cartoon press, and lets the equal layers spring apart with a soft bounce. The agreed direction is visible, playful splitting; the press design, timing, and exact animation remain art choices. Motion does not determine quantity, and **Reduce Motion** presents the same division with a static change.
+**Accepted Motion Direction, September 28, 2026:** Rings are bouncy, and splitting in Mean Machine is especially bouncy. Use squash and stretch, overshoot and settling, anticipation, and follow-through. Ordinary transfers have a smaller hop and soft landing so the splitting action has a distinct, more exuberant motion.
+
+| Animation Principle | Recommended Splitting Action |
+| --- | --- |
+| Anticipation | Compress the ring slightly and briefly pause before release. |
+| Squash And Stretch | Squash under the proposed press, stretch as the layers spring apart, and squash again on landing. |
+| Overshoot | Let each layer travel a little beyond its final resting position. |
+| Follow-Through And Settling | Add progressively smaller rebounds and wobble, then come completely to rest. |
+
+The recommended sequence lifts a whole ring onto a small dividing platform, compresses it with a cartoon press, and releases the equal layers into that motion. Keep deformation roughly volume-preserving so the foam looks convincing. The press design, exact timing, bounce amplitude, and number of rebounds remain art choices. Use a bounded animation that ends at the precise settled geometry; do not leave cargo perpetually wobbling during counting or checking.
+
+Motion is presentation only: it never changes a piece's numeric quantity or creates an additional piece. Keep fraction labels attached and readable. **Reduce Motion** presents the same split and final arrangement through a static change, with identical mathematical state and controls. **Dispatch** evaluates the settled state after the animation completes, consistent with the move lock described below.
 
 Two half layers must fit into the same footprint and stacking space as one whole ring; three thirds must do the same. A faint whole-unit guide can make that relationship clear. Readability gaps must not accumulate per piece and make a split ring's settled stack appear taller. Judge equal heights after motion settles, using quantity-based placement. Compression and bounce are temporary presentation effects.
 
