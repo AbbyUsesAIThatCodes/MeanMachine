@@ -1,0 +1,55 @@
+import { chromium } from '@playwright/test';
+import { mkdir, writeFile } from 'node:fs/promises';
+const folder = process.env.MEAN_CAPTURE_DIR || '.build/visual-check';
+await mkdir(folder, { recursive: true });
+const browser = await chromium.launch({ channel: 'chrome', args: ['--enable-unsafe-swiftshader'] });
+const page = await browser.newPage({ viewport: { width: 1366, height: 768 } });
+const errors = [];
+page.on('pageerror', error => errors.push(error.message));
+page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
+const snapshots = {};
+async function capture(name) {
+  await page.screenshot({ path: `${folder}/${name}.png` });
+  snapshots[name] = await page.evaluate(() => window.__meanScene.snapshot());
+}
+async function move(a, b) {
+  await page.locator('#source').selectOption(String(a));
+  await page.locator('#destination').selectOption(String(b));
+  await page.locator('#move').click();
+  await page.waitForFunction(() => !document.querySelector('#dispatch').disabled);
+}
+await page.goto(process.env.MEAN_BASE_URL || 'http://127.0.0.1:4174');
+await page.waitForFunction(() => window.__meanScene);
+await capture('01-Shared-Exterior');
+await page.locator('#skip-intro').click();
+await capture('02-Original-Whole-Rings');
+await page.locator('#reduce-motion').check();
+await page.locator('#prediction').fill('6');
+await page.getByRole('button', { name: 'Record Prediction' }).click();
+for (let n = 0; n < 3; n++) await move(2, 0);
+await move(2, 1);
+await page.locator('#dispatch').click();
+await capture('03-Equal-Whole-Shares');
+await page.locator('#next').click();
+await page.locator('#prediction').fill('4');
+await page.getByRole('button', { name: 'Record Prediction' }).click();
+await move(1, 0);
+await page.locator('#reduce-motion').uncheck();
+await page.locator('#split').click();
+await page.waitForTimeout(570);
+await capture('04-Bouncy-Half-Layers');
+await page.waitForFunction(() => !document.querySelector('#dispatch').disabled);
+await move(1, 0);
+await page.locator('#dispatch').click();
+await page.locator('#total').fill('7'); await page.locator('#count').fill('2'); await page.locator('#mean').fill('3.5');
+await page.getByRole('button', { name: 'Check Calculation' }).click();
+await capture('05-Exact-Half-Shares');
+await page.setViewportSize({ width: 1024, height: 768 });
+await capture('06-Laptop-Half-Shares');
+await page.setViewportSize({ width: 1366, height: 768 });
+await page.locator('#front-view').click();
+await capture('07-Front-View');
+await writeFile(`${folder}/scene-evidence.json`, JSON.stringify({ errors, snapshots }, null, 2));
+await browser.close();
+console.log(JSON.stringify({ folder, errors, screenshots: Object.keys(snapshots) }));
+if (errors.length) process.exitCode = 1;

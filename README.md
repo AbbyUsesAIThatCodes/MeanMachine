@@ -1,14 +1,16 @@
 # Mean Machine
 
-A proposed educational factory game for exploring the arithmetic mean by sharing colorful foam packing rings equally among pallets.
+A local 3D classroom game for exploring the arithmetic mean by sharing colorful foam packing rings equally among pallets.
 
-**Status: Local Development.** A bounded equal-sharing classroom prototype is being implemented. The exact math state, prediction/sharing/calculation/explanation controls, and build tooling are present. Canonical 3D asset integration and the shared factory entry remain pending; this checkpoint is not the finished 3D game. No publication or deployment is authorized.
+**Status: Local Review.** The two-round prototype includes the shared factory exterior and animated entry, exact whole/half-ring sharing, keyboard and 3D click controls, prediction, calculation, and explanation. Original observations remain visible while cargo moves. No publication or deployment is authorized.
 
 ## Run The Local Prototype
 
 Use Node 22.12+ and pnpm. Run `pnpm install`, `pnpm test`, then `pnpm dev` and open `http://127.0.0.1:4174`. The two invented shipments are **2, 4, 9** and **2, 5**. Record a prediction, click a source and destination or use the keyboard controls, dispatch equal loads, then calculate and explain.
 
-`pnpm build` creates an identified local artifact under `artifacts/`. `pnpm preview` serves that existing build on `http://127.0.0.1:4175` without minting another identity. `pnpm test:browser` expects the local dev server to be running; set `MEAN_BASE_URL` to test the production preview instead. Tests use installed Chrome.
+`pnpm build` creates an identified folder and review ZIP under `artifacts/`. Extract the ZIP and open **Start-Mean-Machine.html** in Chrome or Edge to play offline without a server or dependency install. The build includes the Three.js MIT license and full build manifest.
+
+`pnpm preview` serves the equivalent existing build on `http://127.0.0.1:4175` without minting another identity. `pnpm test:browser` expects the local dev server to be running; set `MEAN_BASE_URL=http://127.0.0.1:4175`, `MEAN_PRODUCTION=1`, and `MEAN_OFFLINE=1` for the full production suite. Tests use installed Chrome. `node scripts/verify-build.mjs` verifies the directory, ZIP, embedded manifest, standalone page, compiled identity, and current report.
 
 See [Local Classroom Slice](docs/LOCAL-ROADMAP.md), [Shared Asset Integration](docs/SHARED-ASSET-INTEGRATION.md), [Build Identity](docs/BUILD_IDENTITY.md), and [Working Guidance](AGENTS.md). Generated current-build details are in `.build/CURRENT_BUILD.md` after a successful build.
 
@@ -20,7 +22,7 @@ Start with the [Mechanics And 3D Proposal](docs/MECHANICS-AND-3D-PROPOSAL.md), r
 
 The [Original Non-Binding Concept Notes](docs/CONCEPT-NOTES.md), recorded September 27, preserve the earlier discussion. The [Skimmer Statistics Curricular Goals](docs/curriculum/DM-1.4-Skimmer-Statistics-Curricular-Goals.md) provide a public planning adaptation with all 54 local audit IDs and links to the full DM reference. The complete audit is not copied verbatim because it includes quoted and reproduced PLTW content.
 
-The intended planning sequence is concept notes, a focused roadmap conversation, concrete issues, and implementation PRs.
+The historical proposals preserve the design discussion. Current local implementation scope is in [Local Classroom Slice](docs/LOCAL-ROADMAP.md); issues and PRs still require separate authorization.
 
 Companion project: [Skimmer Data Center](https://github.com/AbbyUsesAIThatCodes/SkimmerDataCenter), focused on spreadsheet skills and interpreting skimmer flight data. The projects are separate so each can be developed and tested independently.
 

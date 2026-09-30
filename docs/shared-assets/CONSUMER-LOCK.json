@@ -1,0 +1,18 @@
+{
+  "assetSet": "foam-factory-world",
+  "version": "1.0.0",
+  "sourceRepository": "AbbyUsesAIThatCodes/MedianDepot",
+  "sourceRevision": "871ca3d2e5d605524cd846db13de3e22a1ea9658",
+  "branch": "local/issue-2-shared-world",
+  "status": "frozen-local-only",
+  "files": {
+    "CONSUMER-INSTRUCTIONS.md": "def78ec357e1939d6d67a82ec8941cabe08a8c1fd67084dfced2fa16035988d8",
+    "src/shared/camera.js": "e41dab2b7b8e28dee21c7e3dd859ac473d0c2ca11b6bdcac4acd651f55ceca29",
+    "src/shared/cargo.js": "6ad117c13b406b73516a6bcde2641a21036556dbe11ac4f59d022d0ec484e2e3",
+    "src/shared/manifest.json": "fac0e1c44eac8e9aed0550778cc4dad3458b6aeff8b45fc0d788f9a53193f479",
+    "src/shared/palette.js": "9b76fd8f78b3e51ddd88e9fe930be01657125e5287772102177d678fd71791fc",
+    "src/shared/primitives.js": "44a9b57b4d3a3e48799c52375c29d8024c20e731c795ae9b40f958c6c7290678",
+    "src/shared/world.js": "1f212faa56908be5719bddef6f4356704fc85b5353f2fc31fa598cccac573928",
+    "three-LICENSE.txt": "5d5dad8147523d59bc15cca838ae0bdaae7075230ec49132c551a1d18e7b3412"
+  }
+}

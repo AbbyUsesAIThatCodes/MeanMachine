@@ -12,6 +12,7 @@ async function move(page, source, destination) {
 test.beforeEach(async ({ page }) => {
   await page.goto('/');
   await page.getByLabel('Reduce Motion').check();
+  await page.getByRole('button', { name: 'Skip Intro' }).click();
 });
 test('whole shipment keyboard flow separates prediction, equal shares, calculation, and explanation', async ({ page }) => {
   const errors = [];

@@ -8,9 +8,14 @@ let selected = null;
 let source = 2;
 let destination = 0;
 let stageRendered = null;
+let inIntro = true;
 const motion = $('#reduce-motion');
 motion.checked = matchMedia('(prefers-reduced-motion: reduce)').matches;
-const presentation = createPresentation($('#scene'), selectPallet);
+const presentation = createPresentation($('#scene'), selectPallet, { onArrive() {
+  inIntro = false; $('#intro').hidden = true; $('#app').hidden = false; $('#view-controls').hidden = false;
+  render(); chooseStageFocus();
+}, onStatus: announce });
+presentation.setReducedMotion(motion.checked);
 const manifest = __BUILD_MANIFEST__;
 $('#build-id').textContent = `${manifest.mode === 'development' ? 'Live Development • ' : 'Local Review • '}${manifest.id}`;
 
@@ -23,7 +28,7 @@ const stageTitles = { prediction: 'What Is Your Prediction?', sharing: 'Make Equ
 const letters = ['A', 'B', 'C'];
 function render() {
   const focusedPallet = document.activeElement?.dataset?.pallet;
-  const busy = Boolean(state.pending);
+  const busy = Boolean(state.pending) || inIntro;
   const sharing = state.stage === 'sharing';
   const values = math.loads(state);
   $('#shipment-code').textContent = `${math.SHIPMENTS[state.key].code} • ${math.SHIPMENTS[state.key].title}`;
@@ -37,6 +42,7 @@ function render() {
   $('#loads').querySelectorAll('button').forEach(button => button.addEventListener('click', () => selectPallet(Number(button.dataset.pallet))));
   $('#undo').disabled = busy || !sharing || !state.history.length;
   for (const id of ['reset', 'replay', 'next']) $(`#${id}`).disabled = busy;
+  for (const id of ['overview', 'front-view']) $(`#${id}`).disabled = busy;
   $('#next').textContent = state.key === 'whole' ? 'Try Half-Rings' : 'Try Whole Rings';
   $('#stage-title').textContent = stageTitles[state.stage];
   document.querySelectorAll('#steps li').forEach(li => { const active = li.dataset.step === (state.stage === 'complete' ? 'explanation' : state.stage); if (active) li.setAttribute('aria-current', 'step'); else li.removeAttribute('aria-current'); });
@@ -76,7 +82,7 @@ function renderStage() {
   }
 }
 function selectPallet(index) {
-  if (state.stage !== 'sharing' || state.pending) return;
+  if (inIntro || state.stage !== 'sharing' || state.pending) return;
   safely(() => {
     if (selected === null) {
       if (!state.pallets[index].length) { announce('This pallet is empty. Choose a source with cargo.'); return; }
@@ -104,6 +110,11 @@ $('#next').addEventListener('click', () => { if (state.pending) return; state = 
 $('#reference-button').addEventListener('click', () => { const open = $('#reference').hidden; $('#reference').hidden = !open; $('#reference-button').setAttribute('aria-expanded', String(open)); if (open) $('#close-reference').focus(); });
 function closeReference() { $('#reference').hidden = true; $('#reference-button').setAttribute('aria-expanded', 'false'); $('#reference-button').focus(); }
 $('#close-reference').addEventListener('click', closeReference);
+$('#enter-factory').addEventListener('click', () => { $('#enter-factory').disabled = true; $('#intro-title').textContent = 'Entering The Factory'; presentation.startIntro(); });
+$('#skip-intro').addEventListener('click', () => presentation.skipIntro());
+motion.addEventListener('change', () => presentation.setReducedMotion(motion.checked));
+$('#overview').addEventListener('click', () => { presentation.setView('overview'); $('#overview').setAttribute('aria-pressed', 'true'); $('#front-view').setAttribute('aria-pressed', 'false'); });
+$('#front-view').addEventListener('click', () => { presentation.setView('front'); $('#overview').setAttribute('aria-pressed', 'false'); $('#front-view').setAttribute('aria-pressed', 'true'); });
 document.addEventListener('keydown', event => { if (event.key === 'Escape' && !$('#reference').hidden) closeReference(); });
 $('#fullscreen').addEventListener('click', async () => { try { if (document.fullscreenElement) await document.exitFullscreen(); else await document.documentElement.requestFullscreen(); } catch { announce('Fullscreen is unavailable here. You can keep using the window.'); } });
 render();

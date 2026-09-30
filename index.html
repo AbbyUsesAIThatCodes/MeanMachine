@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#173d44" />
+    <link rel="icon" href="data:," />
     <title>Mean Machine — Equal Shares</title>
   </head>
   <body>
@@ -12,7 +13,13 @@
       <div><p class="eyebrow">The Foam-Ring Factory</p><h1>Mean Machine</h1></div>
       <div class="toolbar"><label class="motion"><input id="reduce-motion" type="checkbox" /> Reduce Motion</label><button id="fullscreen" class="quiet">Fullscreen</button><button id="reference-button" class="quiet" aria-expanded="false" aria-controls="reference">Reference</button></div>
     </header>
-    <main id="app">
+    <section id="intro" class="card intro" aria-labelledby="intro-title">
+      <p class="eyebrow">One Factory, Two Ways To Explore</p><h2 id="intro-title">Welcome To Foam Works</h2>
+      <p>Head inside to share colorful cargo equally. Every pallet is one observation.</p>
+      <div class="intro-actions"><button id="enter-factory" class="primary">Enter The Factory</button><button id="skip-intro">Skip Intro</button></div>
+    </section>
+    <div id="view-controls" class="view-controls" aria-label="Camera Views" hidden><button id="overview" aria-pressed="true">Overview</button><button id="front-view" aria-pressed="false">Front View</button></div>
+    <main id="app" hidden>
       <aside class="shipment card" aria-label="Original Shipment">
         <p class="eyebrow" id="shipment-code"></p><h2>Original Shipment</h2>
         <div id="originals"></div>

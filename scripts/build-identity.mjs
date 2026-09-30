@@ -54,7 +54,7 @@ export async function finishBuild(manifest, status, artifact = null) {
   await appendFile('.build/ledger.jsonl', JSON.stringify({ scope: manifest.scope, ordinal: manifest.ordinal, status, id: manifest.id, artifact }) + '\n');
   if (status === 'success') {
     await writeFile('.build/latest.json', JSON.stringify({ ...manifest, artifact }, null, 2) + '\n');
-    await writeFile('.build/CURRENT_BUILD.md', `# Current Local Build\n\n${manifest.id}\n\n- Status: Development / Local Review\n- Source: ${manifest.revision}${manifest.dirty ? ' (Dirty Local Sources)' : ''}\n- Source Fingerprint: ${manifest.fingerprint}\n- Built At: ${manifest.builtAt}\n- Output: ${artifact}\n- Public Deployment: None\n`);
+    await writeFile('.build/CURRENT_BUILD.md', `# Current Local Build\n\n${manifest.id}\n\n- Status: Development / Local Review\n- Source: ${manifest.revision}${manifest.dirty ? ' (Dirty Local Sources)' : ''}\n- Source Fingerprint: ${manifest.fingerprint}\n- Built At: ${manifest.builtAt}\n- Output: ${artifact}\n- Review ZIP: ${artifact}.zip\n- Public Deployment: None\n`);
   }
   console.log(`[Build ${status}] ${manifest.id}`);
 }

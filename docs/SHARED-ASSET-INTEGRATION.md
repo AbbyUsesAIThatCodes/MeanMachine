@@ -1,29 +1,29 @@
 # Shared Asset Integration
 
-The Median Depot worker is the sole canonical author of the shared factory exterior, cargo, pallets and starting camera. Mean Machine has deliberately not authored replacements. `src/scene.js` is currently a Three.js renderer seam with no geometry; the mathematical flow is independently usable through the accessible controls. Do not present this interim state as the finished 3D game.
+Mean Machine consumes the frozen `foam-factory-world@1.0.0` source from Median Depot local commit `871ca3d2e5d605524cd846db13de3e22a1ea9658`. Median Depot remains the canonical author of the factory exterior, cargo, pallets and starting camera. The complete shared source is copied unchanged into `src/shared/`.
 
-## Requested Contract
+## Accepted Frozen Contract
 
-- Plain ES modules using one installed Three.js instance.
-- Ring constructor with independent color, relief and symbol; a fractional thickness parameter for exact half-layers. The nominal whole-ring thickness and pallet deck height must be exported or documented.
-- Pallet constructor and a factory-world constructor.
-- Shared exterior camera pose and a Mean route ending at the interior teaching view; skip and reduced motion must arrive at the exact same endpoint.
-- Teaching-area bounds, pallet row coordinates and orientation. The Mean UI reserves a compact left original-data card and right activity card on student laptops.
-- A revision and license/provenance record for the copied shared module(s). Identical copies can be hash-checked across the two local repositories.
+- Handoff ZIP SHA-256: `8ea6a139f9d3147ef7569e2405f0840590a24fc5f4a06ae14deccc355592833e`.
+- [Consumer Instructions](shared-assets/CONSUMER-INSTRUCTIONS.md) and [Consumer Lock](shared-assets/CONSUMER-LOCK.json) retain the complete pinned API and byte hashes, including the manifest and license.
+- Three.js is pinned to `0.186.1`; its MIT license is preserved in `public/licenses/three-LICENSE.txt` and every review ZIP.
+- `.gitattributes` disables text normalization for the frozen source, contract records and license. `tests/shared-assets.test.mjs` checks all copied bytes against the consumer lock.
+- Initial position `[22,18,32]`, target `[-6,2,-4]`, FOV 35 and zero roll are exact, with no initial view offset. The game uses `sampleIntro('mean', elapsedMs, fittedEndpoint)` and hides the shell after 60% of the route. Skip, reduced motion and animated arrival share the fitted endpoint.
+- Mean's pallet row is centered at `[-14,0.14,-7.1]`, with 2.7 units between pallets. Teaching framing accounts for the left original-data card, right activity card, viewport size and two/three-pallet count. The final camera offset eases in during arrival.
 
-Actual export names can follow the canonical worker's API. Mean will adapt to that API rather than requiring this draft naming.
+Do not edit `src/shared/` or regenerate its manifest in this consumer. A later shared change needs a new canonical handoff and refreshed lock.
 
 ## Mean-Owned Presentation
 
 `src/math-state.js` holds the authoritative quantities. Each piece has `{ id, root, origin, halves }`; `halves` is 1 or 2, with 2 representing one whole ring. Original group appearance is in `ORIGINS`, independent of destination. `loads(state)` returns exact half-unit sums. A pallet stays one observation when a ring is split.
 
-Piece placement will accumulate quantities rather than add a gap per physical piece. Two half-layers therefore occupy exactly one whole-ring height. Animations may deform temporarily, but settled geometry must restore the precise scale and position. The state locks moves, split, dispatch, undo, reset and replay until presentation settles.
+`src/piece-layout.js` accumulates quantity rather than adding a gap per physical piece. Two half-layers occupy exactly one whole-ring height. `src/scene.js` creates empty canonical pallets and fills them with individually identified canonical rings. Current tags are replaced using the shared label helper. Settled geometry restores precise scale and position. The state locks moves, split, dispatch, undo, reset and replay until presentation settles.
 
-Transfer motion should be a small hop. Splitting should have anticipation, squash/stretch, separation overshoot and bounded settling. Reduce Motion skips those deformations without changing the mathematical operation.
+Transfers use a 620 ms hop and soft landing. Splitting uses 1150 ms of anticipation, volume-preserving squash/stretch, layer separation and bounded settling. Reduce Motion skips or finishes the presentation without changing the mathematical operation. Hidden-tab interruption and context loss settle pending operations; accessible controls continue to use the same exact math state.
 
 ## Current Status
 
 - Exact state and accessible classroom controls: Implemented.
-- Canonical assets and shared entry camera: Awaiting parent contract.
-- 3D piece placement, hit testing, split/transfer motion: Pending that contract.
+- Canonical assets and shared entry camera: Implemented from the frozen handoff.
+- 3D piece placement, hit testing, split/transfer motion: Implemented and locally verified.
 - No external issues, PRs, pushes, merges, deployments or settings changes.

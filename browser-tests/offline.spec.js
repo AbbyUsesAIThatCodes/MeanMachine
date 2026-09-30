@@ -1,0 +1,30 @@
+import { test, expect } from '@playwright/test';
+import { readFile } from 'node:fs/promises';
+import { pathToFileURL } from 'node:url';
+import path from 'node:path';
+
+test('extracted standalone game completes exact half sharing with the network disabled', async ({ page, context }) => {
+  test.skip(!process.env.MEAN_OFFLINE, 'Verify the standalone entry after building.');
+  const latest = JSON.parse(await readFile('.build/latest.json', 'utf8'));
+  const errors = [], externalRequests = [];
+  page.on('pageerror', error => errors.push(error.message));
+  page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
+  page.on('request', request => { if (/^https?:/.test(request.url())) externalRequests.push(request.url()); });
+  await context.setOffline(true);
+  await page.goto(pathToFileURL(path.resolve(latest.artifact, 'Start-Mean-Machine.html')).href);
+  await page.waitForFunction(() => window.__meanScene);
+  await expect(page.locator('#build-id')).toHaveText(`Local Review • ${latest.id}`);
+  await page.locator('#reduce-motion').check(); await page.locator('#enter-factory').click();
+  await page.locator('#next').click(); await page.locator('#prediction').fill('4');
+  await page.getByRole('button', { name: 'Record Prediction' }).click();
+  await page.locator('#source').selectOption('1'); await page.locator('#destination').selectOption('0');
+  await page.locator('#move').click(); await page.locator('#split').click(); await page.locator('#move').click();
+  await expect(page.locator('.load .value')).toHaveText(['3½', '3½']);
+  await page.locator('#dispatch').click();
+  await page.locator('#total').fill('7'); await page.locator('#count').fill('2'); await page.locator('#mean').fill('3.5');
+  await page.getByRole('button', { name: 'Check Calculation' }).click();
+  await page.locator('#explanation').fill('Seven units shared among two original observations makes 3.5 per observation.');
+  await page.getByRole('button', { name: 'Finish Shipment' }).click();
+  await expect(page.getByRole('heading', { name: 'Shipment Complete' })).toBeVisible();
+  expect(externalRequests).toEqual([]); expect(errors).toEqual([]);
+});
