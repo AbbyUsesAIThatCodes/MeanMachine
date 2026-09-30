@@ -2,7 +2,17 @@
 
 A proposed educational factory game for exploring the arithmetic mean by sharing colorful foam packing rings equally among pallets.
 
-**Status: Concept Refinement.** No playable application or approved implementation roadmap is included yet.
+**Status: Local Development.** A bounded equal-sharing classroom prototype is being implemented. The exact math state, prediction/sharing/calculation/explanation controls, and build tooling are present. Canonical 3D asset integration and the shared factory entry remain pending; this checkpoint is not the finished 3D game. No publication or deployment is authorized.
+
+## Run The Local Prototype
+
+Use Node 22.12+ and pnpm. Run `pnpm install`, `pnpm test`, then `pnpm dev` and open `http://127.0.0.1:4174`. The two invented shipments are **2, 4, 9** and **2, 5**. Record a prediction, click a source and destination or use the keyboard controls, dispatch equal loads, then calculate and explain.
+
+`pnpm build` creates an identified local artifact under `artifacts/`. `pnpm preview` serves that existing build on `http://127.0.0.1:4175` without minting another identity. `pnpm test:browser` expects the local dev server to be running; set `MEAN_BASE_URL` to test the production preview instead. Tests use installed Chrome.
+
+See [Local Classroom Slice](docs/LOCAL-ROADMAP.md), [Shared Asset Integration](docs/SHARED-ASSET-INTEGRATION.md), [Build Identity](docs/BUILD_IDENTITY.md), and [Working Guidance](AGENTS.md). Generated current-build details are in `.build/CURRENT_BUILD.md` after a successful build.
+
+## Accepted Design Direction
 
 **Chosen Cargo:** Big, stackable foam rings on wooden pallets, accepted September 28, 2026. Programmatic color and a small collection of raised/recessed surface patterns vary independently. Rings divide into equal, labeled layers with especially bouncy squash and stretch, overshoot, and settling; ordinary transfers have a smaller bounce. See [Colorful Foam Rings And Pallets](docs/MECHANICS-AND-3D-PROPOSAL.md#colorful-foam-rings-and-pallets) for the shared Mean Machine/Median Depot direction and the rules for preserving quantity.
 
@@ -16,4 +26,4 @@ Companion project: [Skimmer Data Center](https://github.com/AbbyUsesAIThatCodes/
 
 [Median Depot](https://github.com/AbbyUsesAIThatCodes/MedianDepot) is the companion median game. The shared 3D introduction begins outside a cartoon factory: Mean Machine enters the building, while Median Depot heads toward the rail yard. Students redistribute quantities in Mean Machine and sort intact observations in Median Depot.
 
-Student laptops are the primary device target, with readable classroom projection. Worksheet development follows the playable game. This documentation proposes no new game build or deployment.
+Student laptops are the primary device target, with readable classroom projection. Worksheet development follows the playable game. The local prototype and its verification limits are recorded in [Local Checkpoint Verification](docs/VERIFICATION.md); no deployment is authorized.

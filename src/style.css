@@ -1,0 +1,65 @@
+:root { font-family: 'Comic Sans MS', 'Comic Sans', cursive; color: #153f48; background: #d4e9e5; font-synthesis: none; }
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 720px; min-height: 100vh; overflow: hidden; }
+button, input, select, textarea { font: inherit; }
+button { cursor: pointer; border: 2px solid #214a52; border-radius: 12px; color: #163e46; background: #fffdf4; padding: 9px 14px; font-weight: bold; box-shadow: 0 3px 0 #214a5240; }
+button:hover:not(:disabled) { background: #fff3bb; transform: translateY(-1px); }
+button:active:not(:disabled) { transform: translateY(2px); box-shadow: none; }
+button:disabled { opacity: .45; cursor: default; }
+button.primary { background: #ffe079; width: 100%; }
+:focus-visible { outline: 4px solid #bf3571; outline-offset: 3px; }
+input, select, textarea { border: 2px solid #68858a; border-radius: 9px; padding: 8px; color: #153f48; background: white; width: 100%; }
+input[type=checkbox] { width: 19px; height: 19px; accent-color: #197d7c; }
+label { display: block; font-weight: bold; }
+p { margin: .65em 0; line-height: 1.45; }
+h1 { font-size: clamp(24px, 2.8vw, 38px); line-height: 1.1; margin: 2px 0; }
+h2 { font-size: 21px; margin: 8px 0 12px; line-height: 1.15; }
+.eyebrow { text-transform: uppercase; font-size: 11px; font-weight: bold; letter-spacing: .13em; margin: 0; }
+.small { font-size: 13px; line-height: 1.45; }
+#scene { position: fixed; inset: 0; background: linear-gradient(#b8dadc, #e1efe4 60%, #bbd6cf); }
+#scene canvas { display: block; width: 100%; height: 100%; }
+.topbar { position: fixed; top: 18px; left: 24px; right: 24px; display: flex; justify-content: space-between; align-items: start; pointer-events: none; z-index: 3; }
+.topbar > * { pointer-events: auto; }
+.toolbar { display: flex; gap: 9px; align-items: center; }
+.quiet { font-size: 13px; padding: 8px 11px; }
+.motion { display: flex; align-items: center; gap: 6px; font-size: 13px; background: #fffdf4ed; border-radius: 12px; padding: 7px 10px; }
+.card { background: #fffdf4f5; border: 2px solid #43636a; border-radius: 18px; box-shadow: 0 7px 0 #214a521d, 0 10px 30px #163e4610; padding: 18px; }
+.shipment { position: fixed; top: 104px; left: 24px; width: 230px; z-index: 2; }
+.original-row { display: flex; align-items: center; justify-content: space-between; margin: 6px 0; border-bottom: 1px solid #dce4dc; padding-bottom: 5px; }
+.original-row strong { font-size: 26px; }
+.identity { display: inline-block; margin-right: 4px; color: #193e46; }
+.prediction-record { background: #e8eee0; border-radius: 9px; font-size: 13px; padding: 8px; }
+.activity { position: fixed; right: 24px; top: 104px; width: 312px; max-height: calc(100vh - 230px); overflow-y: auto; z-index: 2; }
+#steps { display: flex; list-style: none; gap: 6px; padding: 0; margin: 0 0 14px; font-size: 11px; }
+#steps li { padding-bottom: 5px; border-bottom: 3px solid #d8dfd3; flex: 1; text-align: center; }
+#steps li[aria-current=step] { border-color: #bc4670; color: #9a295b; font-weight: bold; }
+#stage-content > form { display: grid; gap: 10px; }
+#stage-content label { font-size: 13px; }
+#stage-content p { font-size: 14px; }
+#feedback { font-size: 13px; border-left: 3px solid #3e8687; padding-left: 9px; margin: 12px 0 0; }
+#feedback:empty { display: none; }
+.control-row { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin: 9px 0; }
+.control-stack { display: grid; gap: 10px; }
+.selection-note { min-height: 2.8em; }
+.loads { position: fixed; bottom: 140px; left: 270px; right: 350px; display: flex; justify-content: center; gap: 13px; z-index: 1; }
+.load { min-width: 95px; flex: 1; max-width: 160px; text-align: center; border-color: #1d5a66; background: #fffdf4f5; padding: 8px 10px; }
+.load[aria-pressed=true] { outline: 4px solid #d85586; outline-offset: 4px; background: #ffe4ee; }
+.load .value { display: block; font-size: clamp(25px, 3.8vw, 48px); line-height: 1.25; }
+.load .label { display: block; font-size: 11px; }
+.load .piece { display: block; font-size: 11px; border-top: 1px solid #c9d4cd; margin-top: 4px; padding-top: 4px; }
+.load:disabled { opacity: 1; cursor: default; }
+.load .pallet-name { font-size: 14px; }
+.bottom-toolbar { position: fixed; bottom: 68px; left: 24px; right: 24px; display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; z-index: 2; }
+.bottom-toolbar button { font-size: 13px; }
+.reference { position: fixed; top: 96px; right: 24px; width: 380px; max-height: calc(100vh - 155px); overflow: auto; z-index: 5; box-shadow: 0 15px 60px #183f4866; }
+.reference ul { padding-left: 20px; font-size: 14px; }
+.reference > ul > li { margin: 12px 0; }
+.reference ul ul { font-size: 13px; }
+.build-id { position: fixed; bottom: 0; left: 0; right: 0; padding: 7px 15px; background: #173d44f5; color: #fffbea; font: 11px/1.45 'Comic Sans MS', cursive; z-index: 6; overflow-wrap: anywhere; text-align: center; user-select: text; }
+.equation { padding: 10px; background: #e8efdf; border-radius: 10px; font-size: 19px !important; text-align: center; }
+.stage-actions { display: grid; gap: 9px; }
+[hidden] { display: none !important; }
+@media (max-width: 1050px) { .shipment { width: 190px; left: 16px; padding: 13px; } .activity { right: 16px; width: 276px; padding: 14px; } .loads { left: 222px; right: 307px; gap: 8px; bottom: 150px; } .load { min-width: 70px; padding: 7px 4px; } .topbar { left: 16px; right: 16px; } }
+@media (max-height: 700px) { .topbar { top: 10px; } .shipment, .activity { top: 88px; } .activity { max-height: calc(100vh - 204px); } .bottom-toolbar { bottom: 62px; } .loads { bottom: 124px; } h2 { font-size: 19px; } }
+@media (max-width: 760px) { body { min-width: 0; overflow: auto; } #app { position: relative; padding: 105px 12px 160px; display: grid; gap: 12px; } .shipment, .activity { position: relative; top: auto; left: auto; right: auto; width: auto; max-height: none; } .shipment { order: 0; } .activity { order: 2; } .loads { order: 1; position: relative; left: auto; right: auto; bottom: auto; padding: 120px 0 0; } .topbar { align-items: center; } .toolbar { flex-wrap: wrap; justify-content: end; max-width: 180px; } .toolbar button { font-size: 11px; } .motion { font-size: 11px; } .reference { left: 12px; right: 12px; width: auto; } .bottom-toolbar { left: 8px; right: 8px; bottom: 80px; gap: 6px; } .bottom-toolbar button { padding: 6px; font-size: 11px; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; } }

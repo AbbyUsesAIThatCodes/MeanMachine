@@ -1,0 +1,17 @@
+import assert from 'node:assert/strict';
+import { readFile, readdir } from 'node:fs/promises';
+import path from 'node:path';
+const current = JSON.parse(await readFile('.build/latest.json', 'utf8'));
+const embedded = JSON.parse(await readFile(path.join(current.artifact, 'build-manifest.json'), 'utf8'));
+const { artifact, ...expected } = current;
+assert.deepEqual(embedded, expected);
+assert.equal(path.basename(artifact), embedded.id);
+const codePaths = (await readdir(path.join(artifact, 'assets'))).filter(file => file.endsWith('.js'));
+const code = (await Promise.all(codePaths.map(file => readFile(path.join(artifact, 'assets', file), 'utf8')))).join('\n');
+assert.ok(code.includes(embedded.id), 'Compiled game includes the same immutable identity.');
+assert.ok((await readFile('.build/CURRENT_BUILD.md', 'utf8')).includes(embedded.id));
+const rows = (await readFile('.build/ledger.jsonl', 'utf8')).trim().split('\n').map(line => JSON.parse(line));
+const builds = rows.filter(row => row.status === 'success');
+assert.ok(builds.length >= 2, 'At least two actual artifact invocations were verified.');
+assert.equal(new Set(builds.map(row => row.id)).size, builds.length);
+console.log(`Verified Artifact Identity: ${embedded.id}`);
