@@ -54,12 +54,12 @@ export function createPresentation(container, onPalletClick, { onArrive, onStatu
     const rowWidth = ((state?.pallets.length || 3) - 1) * spacing + 2.5;
     const distance = Math.max(13.7, rowWidth / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.aspect * available / innerWidth));
     const center = [-14, 1.2, rowZ];
-    teachingPose = { position: view === 'front' ? [-14, 1.2 + distance * 0.24, rowZ + distance] : [-14 + distance * 0.22, 1.2 + distance * 0.57, rowZ + distance * 0.91], target: center, roll: 0 };
+    teachingPose = { position: view === 'front' ? [-14, 1.2 + distance * 0.6, rowZ + distance] : [-14 + distance * 0.22, 1.2 + distance * 0.57, rowZ + distance * 0.91], target: center, roll: 0 };
   }
   function fitOverlay(amount = 1) {
     const left = document.querySelector('.shipment')?.getBoundingClientRect().right || (innerWidth <= 1050 ? 206 : 254);
     const right = document.querySelector('.activity')?.getBoundingClientRect().left || innerWidth - (innerWidth <= 1050 ? 292 : 336);
-    camera.setViewOffset(innerWidth, innerHeight, (innerWidth / 2 - (left + right) / 2) * amount, 28 * amount, innerWidth, innerHeight);
+    camera.setViewOffset(innerWidth, innerHeight, (innerWidth / 2 - (left + right) / 2) * amount, 50 * amount, innerWidth, innerHeight);
     camera.updateProjectionMatrix();
   }
   function render() { if (!contextLost) renderer.render(scene, camera); }
@@ -72,6 +72,10 @@ export function createPresentation(container, onPalletClick, { onArrive, onStatu
     clearCargo();
     state.pallets.forEach((_, index) => {
       const pallet = createPallet({ id: letter(index), label: `Pallet ${letter(index)}`, quantity: 0 });
+      // Move only the generated display board forward, so it cannot mask the
+      // lowest rings. Frozen source geometry and the pallet footprint stay intact.
+      const board = pallet.children.find(child => child.isMesh && child.position.z === 0.99 && child.position.y === 0.62);
+      if (board) { board.position.z += 0.4; board.position.y = 0.35; board.scale.y = 0.75; }
       pallet.userData.palletIndex = index; pallet.position.copy(palletPosition(index));
       cargo.add(pallet); pallets.push(pallet);
       const halo = new THREE.Mesh(new THREE.RingGeometry(1.19, 1.29, 64), new THREE.MeshBasicMaterial({ color: 0x547c7f, transparent: true, opacity: 0.5, side: THREE.DoubleSide }));
@@ -95,7 +99,7 @@ export function createPresentation(container, onPalletClick, { onArrive, onStatu
     loads(next).forEach((quantity, index) => {
       if (pallets[index].userData.halfUnits === quantity) return;
       const old = pallets[index].getObjectByName('Quantity Tag'); if (old) disposeObject(old);
-      const tag = createLabel(pallets[index], formatQuantity(quantity), 1.29, 0.83, [0, 0.62, 1.042], { subtitle: `Pallet ${letter(index)} • Current Load` });
+      const tag = createLabel(pallets[index], formatQuantity(quantity), 1.29, 0.6225, [0, 0.35, 1.442], { subtitle: `Pallet ${letter(index)} • Current Load` });
       tag.name = 'Quantity Tag'; pallets[index].userData.halfUnits = quantity;
       pallets[index].userData.quantity = quantity / 2;
     });

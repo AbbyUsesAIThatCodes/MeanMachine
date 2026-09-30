@@ -14,7 +14,7 @@
 - Canvas hit testing transfers the identified top piece. Source color, relief, symbol and identity survive transfers and splits.
 - A split shows two horizontal half-thickness layers with stronger bounce than an ordinary transfer. Pending operations lock relevant controls. Changing Reduce Motion while a split is active restores exact settled geometry; seven units remain seven units across two observations.
 - Resize and simulated context loss preserve state and expose the accessible classroom controls. Replay and new shipments stay inside the factory.
-- Visual inspection covers the shared exterior, initial 2/4/9 stacks, equal 5/5/5 loads, separated half-layers, equal 3.5 loads, and laptop framing. Current-load cards were lowered to clear the pallet tags, and two-pallet framing was tightened at narrower widths.
+- Visual inspection covers the shared exterior, initial 2/4/9 stacks, equal 5/5/5 loads, separated half-layers, equal 3.5 loads, and laptop framing. Current-load cards were lowered to clear the pallet tags, and two-pallet framing was tightened at narrower widths. The generated placards are lower and farther forward, with a higher Front View angle, so they do not conceal lower ring layers; shared source bytes remain unchanged.
 
 ## Builds And Evidence
 
