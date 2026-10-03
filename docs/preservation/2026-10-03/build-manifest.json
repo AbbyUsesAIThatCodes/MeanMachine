@@ -1,0 +1,17 @@
+{
+  "version": "0.1.0",
+  "codename": "Foam Rings",
+  "slug": "Foam-Rings",
+  "status": "development",
+  "scope": "local-20260930-mean",
+  "target": "web",
+  "compatibility": "First local classroom prototype; no saved learner data or public API. Codename applies to the 0.1 development milestone.",
+  "id": "0.1.0_Foam-Rings_local-20260930-mean_build-006_20260930T142523Z_g5ae1507e496d_web",
+  "ordinal": 6,
+  "builtAt": "2026-09-30T14:25:23.644Z",
+  "revision": "5ae1507e496d31a95f46d36491d394f8e4187e05",
+  "dirty": false,
+  "fingerprint": "6768987eccc97267f6cab5e992b273627cec805e3f753c19ce456805d17202dc",
+  "mode": "production",
+  "artifact": "artifacts/0.1.0_Foam-Rings_local-20260930-mean_build-006_20260930T142523Z_g5ae1507e496d_web"
+}
