@@ -1,0 +1,9 @@
+{
+  "version": "0.1.0",
+  "codename": "Foam Rings",
+  "slug": "Foam-Rings",
+  "status": "development",
+  "scope": "local-20260930-mean",
+  "target": "web",
+  "compatibility": "First local classroom prototype; no saved learner data or public API. Codename applies to the 0.1 development milestone."
+}
