@@ -1,0 +1,57 @@
+[
+  {
+    "path": "0.1.0_Foam-Rings_local-20260930-mean_build-006_20260930T142523Z_g5ae1507e496d_web.zip",
+    "bytes": 324793,
+    "sha256": "8d2b4613097d5d573c87879a4f2ce0ee16b4c0b16e46668cf62a7471b9c3213e"
+  },
+  {
+    "path": "build-manifest.json",
+    "bytes": 744,
+    "sha256": "35574be576a708b374f7f15b3f24c50ccc75d52c48be20b0aef1e43246f14679"
+  },
+  {
+    "path": "original-build-ledger.jsonl",
+    "bytes": 1745,
+    "sha256": "44e8658832076ba26f332be09059c45d62fd4e8185bae93209a9f3649e5e3cb1"
+  },
+  {
+    "path": "screenshots/01-Shared-Exterior.png",
+    "bytes": 228140,
+    "sha256": "78d2f4203e8446b70b7c0f54ab52cf6a81e38c6fa8d9e552ad443f77ba2770b1"
+  },
+  {
+    "path": "screenshots/02-Original-Whole-Rings.png",
+    "bytes": 218651,
+    "sha256": "4587be5065a530e9e91e051a94a407aca5b77001943b260552224532309a67dc"
+  },
+  {
+    "path": "screenshots/03-Equal-Whole-Shares.png",
+    "bytes": 219945,
+    "sha256": "8f515bef522151bb079e5d20e93b3893cc7d7872900fdf7dde53d3f01e3d4146"
+  },
+  {
+    "path": "screenshots/04-Bouncy-Half-Layers.png",
+    "bytes": 206303,
+    "sha256": "f702928186616750ac0bb35f7cc5bd7e7de23e8210a6d9113cb5b417f08c3e52"
+  },
+  {
+    "path": "screenshots/05-Exact-Half-Shares.png",
+    "bytes": 196496,
+    "sha256": "9ad9f699089362ae3c330fae781160e58cdab3089bd5f94da02091f8b8411014"
+  },
+  {
+    "path": "screenshots/06-Laptop-Half-Shares.png",
+    "bytes": 175861,
+    "sha256": "aaf73f62b7e83772043514bc2abcc8b049b76feb1e09a51b6c832fe9d1edabf4"
+  },
+  {
+    "path": "screenshots/07-Front-View.png",
+    "bytes": 186103,
+    "sha256": "9a9df38e491c9256615eb07e4df883374076046479d7dd91335e36413e3130ad"
+  },
+  {
+    "path": "screenshots/scene-evidence.json",
+    "bytes": 40576,
+    "sha256": "5d6c1bedf1c80c3bf6fb1397c5f33098c4f3e20fedd96da495766d5bed45acb5"
+  }
+]
