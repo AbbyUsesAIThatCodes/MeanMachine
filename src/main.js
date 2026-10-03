@@ -1,6 +1,7 @@
 import './style.css';
 import * as math from './math-state.js';
 import { createPresentation } from './scene.js';
+import { familyFor } from './gear-families.js';
 
 const $ = selector => document.querySelector(selector);
 let state = math.createState();
@@ -9,15 +10,22 @@ let source = 2;
 let destination = 0;
 let stageRendered = null;
 let inIntro = true;
+let dragging = false;
 const motion = $('#reduce-motion');
 motion.checked = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const presentation = createPresentation($('#scene'), selectPallet, { onArrive() {
   inIntro = false; $('#intro').hidden = true; $('#app').hidden = false; $('#view-controls').hidden = false;
   render(); chooseStageFocus();
-}, onStatus: announce });
+}, onStatus: announce, onDragActive(active) { dragging = active; render(); }, onTransfer(from, to) {
+  if (inIntro || state.stage !== 'sharing' || state.pending) return false;
+  try { source = from; destination = to; animateAction(math.move(state, from, to)); return true; }
+  catch (error) { announce(error.message); return false; }
+} });
 presentation.setReducedMotion(motion.checked);
 const manifest = __BUILD_MANIFEST__;
+$('#compact-build').textContent = `${manifest.version} · ${manifest.codename} · Build ${String(manifest.ordinal).padStart(3, '0')}`;
 $('#build-id').textContent = `${manifest.mode === 'development' ? 'Live Development • ' : 'Local Review • '}${manifest.id}`;
+$('#build-provenance').textContent = `${manifest.id}\nBuilt: ${manifest.builtAt}\nSource: ${manifest.revision}${manifest.dirty ? ' (Dirty Sources)' : ''}\nFingerprint: ${manifest.fingerprint}\nScope: ${manifest.scope}; Ordinal: ${manifest.ordinal}; Mode: ${manifest.mode}`;
 
 function announce(message) { $('#feedback').textContent = message; }
 function safely(action) {
@@ -28,7 +36,7 @@ const stageTitles = { prediction: 'What Is Your Prediction?', sharing: 'Make Equ
 const letters = ['A', 'B', 'C'];
 function render() {
   const focusedPallet = document.activeElement?.dataset?.pallet;
-  const busy = Boolean(state.pending) || inIntro;
+  const busy = Boolean(state.pending) || inIntro || dragging;
   const sharing = state.stage === 'sharing';
   const values = math.loads(state);
   $('#shipment-code').textContent = `${math.SHIPMENTS[state.key].code} • ${math.SHIPMENTS[state.key].title}`;
@@ -37,7 +45,7 @@ function render() {
   $('#prediction-record').textContent = `First prediction: ${state.prediction} units per pallet`;
   $('#loads').innerHTML = state.pallets.map((pieces, index) => {
     const top = pieces.at(-1);
-    return `<button class="load" data-pallet="${index}" aria-label="Pallet ${letters[index]}, current load ${values[index] / 2} units${top ? `, top piece ${top.halves / 2} unit from ${math.ORIGINS[top.origin].symbol}` : ', empty'}" aria-pressed="${selected === index}" ${!sharing || busy ? 'disabled' : ''}><span class="pallet-name">Pallet ${letters[index]}</span><span class="value">${math.formatQuantity(values[index])}</span><span class="label">Current Load</span><span class="piece">${top ? `Top: ${math.ORIGINS[top.origin].glyph} ${top.halves === 1 ? '½ Layer' : '1 Ring'}` : 'Empty Pallet'}</span></button>`;
+    return `<button class="load" data-pallet="${index}" aria-label="Pallet ${letters[index]}, current load ${values[index] / 2} units${top ? `, top piece ${familyFor(top).name}, ${top.halves / 2} unit from ${math.ORIGINS[top.origin].symbol}` : ', empty'}" aria-pressed="${selected === index}" ${!sharing || busy ? 'disabled' : ''}><span class="pallet-name">Pallet ${letters[index]}</span><span class="value">${math.formatQuantity(values[index])}</span><span class="label">Current Load</span><span class="piece">${top ? `Top: ${familyFor(top).name}<br>${math.ORIGINS[top.origin].glyph} ${top.halves === 1 ? '½ Layer' : '1 Ring'}` : 'Empty Pallet'}</span></button>`;
   }).join('');
   $('#loads').querySelectorAll('button').forEach(button => button.addEventListener('click', () => selectPallet(Number(button.dataset.pallet))));
   $('#undo').disabled = busy || !sharing || !state.history.length;
@@ -50,7 +58,7 @@ function render() {
   $('#stage-content').querySelectorAll('button, input, select, textarea').forEach(control => { control.disabled = busy; });
   if ($('#split')) $('#split').disabled = busy || state.pallets[source]?.at(-1)?.halves !== 2;
   if ($('#source')) { $('#source').value = String(source); $('#destination').value = String(destination); }
-  if ($('#selection-note')) $('#selection-note').textContent = selected === null ? 'Click a source pallet, then a different destination. Or use the controls below.' : `Pallet ${letters[selected]} selected. Choose a destination; select it again to cancel.`;
+  if ($('#selection-note')) $('#selection-note').textContent = selected === null ? 'Drag a top gear to another pallet. Or select a source and destination using the buttons below.' : `Pallet ${letters[selected]} selected. Choose a destination; select it again to cancel.`;
   if ($('#move')) { const top = state.pallets[source]?.at(-1); $('#move').textContent = top?.halves === 1 ? 'Move Top ½ Layer' : 'Move Top Ring'; $('#move').disabled = busy || !top || source === destination; }
   presentation.sync(state, selected);
   if (focusedPallet !== undefined && !busy && sharing) $(`[data-pallet="${focusedPallet}"]`)?.focus({ preventScroll: true });
@@ -82,7 +90,7 @@ function renderStage() {
   }
 }
 function selectPallet(index) {
-  if (inIntro || state.stage !== 'sharing' || state.pending) return;
+  if (inIntro || dragging || state.stage !== 'sharing' || state.pending) return;
   safely(() => {
     if (selected === null) {
       if (!state.pallets[index].length) { announce('This pallet is empty. Choose a source with cargo.'); return; }

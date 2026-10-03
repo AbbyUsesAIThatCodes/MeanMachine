@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { createSharedWorld } from './shared/world.js';
-import { createPallet, createFoamRing, RING_THICKNESS } from './shared/cargo.js';
+import { createPallet, RING_THICKNESS } from './shared/cargo.js';
+import { createGear } from './gear-presentation.js';
 import { createLabel, disposeTree } from './shared/primitives.js';
 import { PALETTE } from './shared/palette.js';
 import { EXTERIOR_POSE, INTRO_DURATION_MS, sampleIntro } from './shared/camera.js';
@@ -9,7 +10,7 @@ import { ORIGINS, loads, formatQuantity } from './math-state.js';
 
 const letter = index => String.fromCharCode(65 + index);
 const smooth = t => t * t * (3 - 2 * t);
-export function createPresentation(container, onPalletClick, { onArrive, onStatus } = {}) {
+export function createPresentation(container, onPalletClick, { onArrive, onStatus, onTransfer, onDragActive } = {}) {
   let renderer;
   try { renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false }); }
   catch { queueMicrotask(() => { onArrive?.(); onStatus?.('The 3D view is unavailable. All sharing controls remain available.'); }); return { sync() {}, async animate() {}, startIntro() {}, skipIntro() {}, setReducedMotion() {}, setView() {} }; }
@@ -36,6 +37,10 @@ export function createPresentation(container, onPalletClick, { onArrive, onStatu
   let pallets = [], highlights = [], state = null, currentKey = null, lastPallets = null;
   let phase = 'exterior', introStarted = null, reducedMotion = false, contextLost = false, activeMotion = null, view = 'overview';
   let teachingPose;
+  let gesture = null, hovered = null, dropTarget = null, suppressClick = false;
+  const glow = new THREE.Mesh(new THREE.BufferGeometry(), new THREE.MeshBasicMaterial({ color: 0xfff3bd, transparent: true, opacity: 0.34, depthWrite: false, side: THREE.DoubleSide }));
+  glow.visible = false; glow.renderOrder = 4; scene.add(glow);
+  renderer.domElement.style.touchAction = 'none';
   const floorY = 0.14;
   const rowZ = -7.1;
   const spacing = 2.7;
@@ -91,7 +96,7 @@ export function createPresentation(container, onPalletClick, { onArrive, onStatu
   }
   function addRing(piece) {
     const origin = ORIGINS[piece.origin];
-    const object = createFoamRing({ identity: piece.id, color: origin.color, pattern: origin.relief, symbol: origin.glyph, fraction: piece.halves / 2 });
+    const object = createGear(piece, origin.glyph);
     object.userData.origin = piece.origin; object.userData.root = piece.root;
     cargo.add(object); ringObjects.set(piece.id, object); return object;
   }
@@ -116,14 +121,16 @@ export function createPresentation(container, onPalletClick, { onArrive, onStatu
     updateLabels(next); lastPallets = next.pallets;
   }
   function sync(next, selected) {
+    if (gesture && (next.pending || next.stage !== 'sharing' || next.key !== state?.key || next.pallets[gesture.source]?.at(-1)?.id !== gesture.pieceId)) cancelDrag('Pickup canceled.');
     state = next;
+    if (next.pending || next.stage !== 'sharing') showHover(null);
     if (currentKey !== next.key) {
       currentKey = next.key; createPallets(); lastPallets = null;
       if (phase === 'teaching') { fitTeachingView(); applyPose(teachingPose); fitOverlay(); }
     }
     if (!next.pending && next.pallets !== lastPallets) arrange(next);
     highlights.forEach((object, index) => { object.material.color.set(index === selected ? 0xc73d78 : ['calculation', 'explanation', 'complete'].includes(next.stage) ? 0x34865b : 0x547c7f); object.material.opacity = index === selected ? 1 : 0.5; });
-    renderer.domElement.style.cursor = phase === 'teaching' && state.stage === 'sharing' && !state.pending ? 'pointer' : 'default';
+    renderer.domElement.style.cursor = gesture?.moved ? 'grabbing' : hovered ? 'grab' : phase === 'teaching' && state.stage === 'sharing' && !state.pending ? 'pointer' : 'default';
     render();
   }
   function arrive() {
@@ -149,7 +156,7 @@ export function createPresentation(container, onPalletClick, { onArrive, onStatu
     }
   }
   function setView(nextView) {
-    if (phase !== 'teaching' || state?.pending) return;
+    if (phase !== 'teaching' || state?.pending || gesture?.moved) return;
     view = nextView; fitTeachingView(); applyPose(teachingPose); fitOverlay(); render();
   }
   function setReducedMotion(value) { reducedMotion = value; if (value) { if (phase === 'entering') arrive(); activeMotion?.finish(); } }
@@ -158,11 +165,12 @@ export function createPresentation(container, onPalletClick, { onArrive, onStatu
     if (reduceMotion || reducedMotion || contextLost) { arrange(next); render(); return; }
     const pending = next.pending;
     const layout = placements(next);
+    updateLabels(next);
     const moving = ringObjects.get(pending.pieceId);
     if (!moving) { arrange(next); render(); return; }
     const start = moving.position.clone();
     const children = [];
-    const duration = pending.type === 'split' ? 1150 : 620;
+    const duration = pending.type === 'split' ? 1150 : 520;
     await new Promise(resolve => {
       const started = performance.now();
       let finished = false;
@@ -176,7 +184,8 @@ export function createPresentation(container, onPalletClick, { onArrive, onStatu
         if (pending.type === 'move') {
           moving.position.lerpVectors(start, layout.get(pending.pieceId).position, smooth(t));
           moving.position.y += Math.sin(Math.PI * t) * 1.1;
-          squash(moving, t < 0.8 ? 1 + 0.16 * Math.sin(Math.PI * t) : 1 - 0.16 * Math.sin((t - 0.8) / 0.2 * Math.PI));
+          squash(moving, t < 0.72 ? 1 + 0.2 * Math.sin(Math.PI * t / 0.72) : 1 - 0.24 * Math.sin((t - 0.72) / 0.28 * Math.PI));
+          moving.rotation.z = Math.sin(Math.PI * t) * 0.16 * Math.sign(layout.get(pending.pieceId).position.x - start.x || 1);
         } else if (t < 0.2) {
           squash(moving, 1 - 0.3 * Math.sin(t / 0.2 * Math.PI / 2));
         } else {
@@ -199,7 +208,111 @@ export function createPresentation(container, onPalletClick, { onArrive, onStatu
     });
   }
   const raycaster = new THREE.Raycaster();
+  function aim(event) {
+    const rect = renderer.domElement.getBoundingClientRect();
+    raycaster.setFromCamera(new THREE.Vector2((event.clientX - rect.left) / rect.width * 2 - 1, 1 - (event.clientY - rect.top) / rect.height * 2), camera);
+  }
+  function canPick() { return phase === 'teaching' && state?.stage === 'sharing' && !state.pending && !contextLost; }
+  function ringAt(event) {
+    aim(event);
+    for (const hit of raycaster.intersectObjects([...ringObjects.values()], true)) {
+      // Decorative line raycasts have a wide world-unit threshold. They must
+      // never turn an adjacent/lower piece into a top-piece pickup target.
+      if (!hit.object.isMesh) continue;
+      let object = hit.object;
+      while (object && !object.userData.identity) object = object.parent;
+      if (!object) continue;
+      const source = object.userData.palletIndex;
+      return state.pallets[source]?.at(-1)?.id === object.userData.identity ? object : null;
+    }
+    return null;
+  }
+  function palletAt(event, ignoredId = null) {
+    if (document.elementFromPoint(event.clientX, event.clientY) !== renderer.domElement) return null;
+    aim(event);
+    const objects = [...pallets, ...[...ringObjects.values()].filter(object => object.userData.identity !== ignoredId)];
+    for (const hit of raycaster.intersectObjects(objects, true)) {
+      if (!hit.object.isMesh) continue;
+      let object = hit.object;
+      while (object && object.userData.palletIndex === undefined) object = object.parent;
+      if (object) return object.userData.palletIndex;
+    }
+    return null;
+  }
+  function showHover(object) {
+    if (hovered === object) return;
+    hovered = object;
+    glow.geometry.dispose();
+    if (object) {
+      const body = object.children.find(child => child.isMesh);
+      glow.geometry = body.geometry.clone(); glow.position.copy(object.position);
+      glow.scale.set(1.055, 1.07, 1.055); glow.position.y += 0.006;
+    }
+    glow.visible = Boolean(object);
+    renderer.domElement.style.cursor = gesture?.moved ? 'grabbing' : object ? 'grab' : 'pointer';
+    render();
+  }
+  function showDestination(index) {
+    dropTarget = index;
+    highlights.forEach((object, i) => {
+      object.material.color.set(i === index ? 0x2dd6a0 : i === gesture?.source ? 0xc73d78 : 0x547c7f);
+      object.material.opacity = i === index || i === gesture?.source ? 1 : 0.4;
+      object.scale.setScalar(i === index ? 1.08 : 1);
+    });
+  }
+  function releaseGesture() {
+    const previous = gesture; gesture = null; dropTarget = null; showHover(null);
+    highlights.forEach(object => object.scale.setScalar(1));
+    if (previous && renderer.domElement.hasPointerCapture(previous.pointerId)) renderer.domElement.releasePointerCapture(previous.pointerId);
+    if (previous?.moved) onDragActive?.(false);
+    return previous;
+  }
+  function cancelDrag(message = 'Pickup canceled. The same piece returned to its stack.') {
+    if (!gesture) return;
+    const moved = gesture.moved; suppressClick = true;
+    releaseGesture(); arrange(state); showDestination(null); render();
+    if (moved) onStatus?.(message);
+  }
+  renderer.domElement.addEventListener('pointerdown', event => {
+    if (!event.isPrimary || event.button !== 0 || !canPick() || gesture) return;
+    suppressClick = false;
+    const object = ringAt(event); if (!object) return;
+    const normal = camera.getWorldDirection(new THREE.Vector3());
+    const plane = new THREE.Plane().setFromNormalAndCoplanarPoint(normal, object.position);
+    const hit = raycaster.ray.intersectPlane(plane, new THREE.Vector3()); if (!hit) return;
+    gesture = { pointerId: event.pointerId, source: object.userData.palletIndex, pieceId: object.userData.identity, object, x: event.clientX, y: event.clientY, plane, offset: object.position.clone().sub(hit), moved: false };
+    renderer.domElement.setPointerCapture(event.pointerId);
+  });
+  renderer.domElement.addEventListener('pointermove', event => {
+    if (gesture) {
+      if (event.pointerId !== gesture.pointerId) return;
+      if (!gesture.moved && Math.hypot(event.clientX - gesture.x, event.clientY - gesture.y) < 5) return;
+      if (!gesture.moved) { gesture.moved = true; suppressClick = true; showHover(null); onDragActive?.(true); onStatus?.('Gear picked up. Drop on another pallet, or press Escape to cancel.'); }
+      aim(event);
+      const hit = raycaster.ray.intersectPlane(gesture.plane, new THREE.Vector3());
+      if (hit) { gesture.object.position.copy(hit.add(gesture.offset)); gesture.object.position.y += reducedMotion ? 0 : 0.16; }
+      const destination = palletAt(event, gesture.pieceId);
+      showDestination(destination === gesture.source ? null : destination);
+      renderer.domElement.style.cursor = 'grabbing'; event.preventDefault(); render();
+    } else if (canPick()) showHover(ringAt(event)); else showHover(null);
+  });
+  renderer.domElement.addEventListener('pointerup', event => {
+    if (!gesture || gesture.pointerId !== event.pointerId) return;
+    if (!gesture.moved) { releaseGesture(); return; }
+    const destination = palletAt(event, gesture.pieceId);
+    if (destination === null || destination === gesture.source) { cancelDrag('Drop canceled. Choose a different pallet; no cargo changed.'); return; }
+    const completed = releaseGesture(); suppressClick = true;
+    try {
+      if (!onTransfer?.(completed.source, destination)) { arrange(state); showDestination(null); render(); }
+    } catch { arrange(state); showDestination(null); render(); onStatus?.('Drop canceled. Your cargo is unchanged.'); }
+  });
+  renderer.domElement.addEventListener('pointercancel', () => cancelDrag());
+  renderer.domElement.addEventListener('lostpointercapture', () => cancelDrag());
+  renderer.domElement.addEventListener('pointerleave', () => { if (!gesture) showHover(null); });
+  window.addEventListener('blur', () => cancelDrag());
+  document.addEventListener('keydown', event => { if (event.key === 'Escape' && gesture) { event.preventDefault(); cancelDrag(); } });
   renderer.domElement.addEventListener('click', event => {
+    if (suppressClick) { suppressClick = false; return; }
     if (phase !== 'teaching' || state?.stage !== 'sharing' || state.pending) return;
     raycaster.setFromCamera(new THREE.Vector2(event.clientX / innerWidth * 2 - 1, 1 - event.clientY / innerHeight * 2), camera);
     for (const hit of raycaster.intersectObjects([...pallets, ...ringObjects.values()], true)) {
@@ -209,18 +322,22 @@ export function createPresentation(container, onPalletClick, { onArrive, onStatu
     }
   });
   window.addEventListener('resize', () => {
+    cancelDrag(); showHover(null);
     camera.aspect = innerWidth / innerHeight; camera.clearViewOffset(); camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight);
     if (phase === 'teaching') { fitTeachingView(); applyPose(teachingPose); fitOverlay(); }
     render();
   });
-  document.addEventListener('visibilitychange', () => { if (document.hidden) { if (phase === 'entering') arrive(); activeMotion?.finish(); } });
-  renderer.domElement.addEventListener('webglcontextlost', event => { event.preventDefault(); contextLost = true; if (phase !== 'teaching') arrive(); activeMotion?.finish(); onStatus?.('The 3D view paused. Your exact quantities are safe; all sharing controls remain available.'); });
+  document.addEventListener('visibilitychange', () => { if (document.hidden) { cancelDrag(); if (phase === 'entering') arrive(); activeMotion?.finish(); } });
+  renderer.domElement.addEventListener('webglcontextlost', event => { event.preventDefault(); cancelDrag(); contextLost = true; if (phase !== 'teaching') arrive(); activeMotion?.finish(); onStatus?.('The 3D view paused. Your exact quantities are safe; all sharing controls remain available.'); });
   renderer.domElement.addEventListener('webglcontextrestored', () => { contextLost = false; render(); onStatus?.('The 3D view is ready again.'); });
   // Read-only scene evidence for browser QA; no game-state mutations are exposed.
   window.__meanScene = Object.freeze({ snapshot() {
     return { phase, camera: { position: camera.position.toArray(), target: target.toArray(), fov: camera.fov, view: camera.view ? { ...camera.view } : null }, shellVisible: world.factoryShell.visible, contextLost,
+      interaction: { held: gesture?.moved ? gesture.pieceId : null, hovered: hovered?.userData.identity || null, destination: dropTarget },
       pallets: pallets.map(p => ({ id: p.userData.id, quantity: p.userData.quantity, position: p.position.toArray() })),
-      rings: [...ringObjects.values()].filter(o => o.visible).map(o => ({ ...o.userData, position: o.position.toArray(), scale: o.scale.toArray() })),
+      rings: [...ringObjects.values()].filter(o => o.visible).map(o => ({ ...o.userData, position: o.position.toArray(), scale: o.scale.toArray(), rotation: [o.rotation.x, o.rotation.y, o.rotation.z] })),
+      ringSurfacePoints: [...ringObjects.values()].map(object => { const projected = object.position.clone().add(new THREE.Vector3(0, RING_THICKNESS * object.userData.fraction / 2, 0.7)).project(camera); return { identity: object.userData.identity, x: (projected.x + 1) * innerWidth / 2, y: (1 - projected.y) * innerHeight / 2 }; }),
+      topPickPoints: state.pallets.map(pieces => { const object = ringObjects.get(pieces.at(-1)?.id); if (!object) return null; const projected = object.position.clone().add(new THREE.Vector3(0, RING_THICKNESS * object.userData.fraction, 0.45)).project(camera); return { x: (projected.x + 1) * innerWidth / 2, y: (1 - projected.y) * innerHeight / 2, identity: object.userData.identity }; }),
       pickPoints: pallets.map(p => { const projected = p.position.clone().add(new THREE.Vector3(0, 1.1, 0)).project(camera); return { x: (projected.x + 1) * innerWidth / 2, y: (1 - projected.y) * innerHeight / 2 }; }) };
   } });
   applyPose(EXTERIOR_POSE); container.dataset.phase = phase; render();

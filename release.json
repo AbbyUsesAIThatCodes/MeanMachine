@@ -3,7 +3,7 @@
   "codename": "Foam Rings",
   "slug": "Foam-Rings",
   "status": "development",
-  "scope": "local-20260930-mean",
+  "scope": "local-20261003-abigail-gears",
   "target": "web",
   "compatibility": "First local classroom prototype; no saved learner data or public API. Codename applies to the 0.1 development milestone."
 }

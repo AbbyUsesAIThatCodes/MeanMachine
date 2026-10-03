@@ -10,7 +10,7 @@
   <body>
     <div id="scene" aria-hidden="true"></div>
     <header class="topbar">
-      <div><p class="eyebrow">The Foam-Ring Factory</p><h1>Mean Machine</h1></div>
+      <div><p class="eyebrow">The Foam-Ring Factory</p><h1>Mean Machine</h1><p id="compact-build" class="compact-build"></p></div>
       <div class="toolbar"><label class="motion"><input id="reduce-motion" type="checkbox" /> Reduce Motion</label><button id="fullscreen" class="quiet">Fullscreen</button><button id="reference-button" class="quiet" aria-expanded="false" aria-controls="reference">Reference</button></div>
     </header>
     <section id="intro" class="card intro" aria-labelledby="intro-title">
@@ -39,6 +39,7 @@
       <h2>Factory Reference</h2>
       <ul><li><strong>Observation</strong><ul><li>One original value. Each labeled pallet stands for one observation.</li><li>Equal values still count separately. A recorded zero also counts.</li></ul></li><li><strong>Quantity</strong><ul><li>One whole ring is one unit; two half-layers together are one unit.</li><li>Moving or splitting cargo preserves the total and the original records.</li></ul></li><li><strong>Mean</strong><ul><li>The equal share: total quantity ÷ number of observations.</li><li>It can be a value that never appeared in the original data.</li></ul></li><li><strong>Median</strong><ul><li>Found by ordering intact observations and locating the middle.</li><li>Median Depot practices that different action.</li></ul></li></ul>
       <p class="small">In skimmer statistics, one trial is one observation. Repacking this model does not change recorded flight distances.</p>
+      <details><summary>Full Build Details</summary><pre id="build-provenance"></pre></details>
       <button id="close-reference">Close Reference</button>
     </aside>
     <footer id="build-id" class="build-id"></footer>

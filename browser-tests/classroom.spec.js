@@ -88,7 +88,7 @@ test('laptop layout and reference controls remain readable', async ({ page }) =>
   await expect(page.getByRole('button', { name: 'Reference', exact: true })).toBeFocused();
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > innerWidth);
   expect(overflow).toBe(false);
-  await expect(page.locator('#build-id')).toContainText('0.1.0_Foam-Rings_local-20260930-mean_build-');
+  await expect(page.locator('#build-id')).toContainText(/0\.1\.0_Foam-Rings_[a-z0-9-]+_build-/);
   await page.screenshot({ path: 'test-results/mean-interface-checkpoint.png' });
 });
 

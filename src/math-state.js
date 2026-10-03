@@ -1,4 +1,5 @@
 // Quantity is measured in exact half-ring units; a piece is never an observation.
+import { startingFamily, familyFor } from './gear-families.js';
 export const SHIPMENTS = Object.freeze({
   whole: Object.freeze({ code: 'MM-01', title: 'The First Shipment', values: [2, 4, 9], halves: false }),
   halves: Object.freeze({ code: 'MM-02', title: 'A Share Between Whole Numbers', values: [2, 5], halves: true }),
@@ -13,7 +14,7 @@ export const loads = state => state.pallets.map(pieces => pieces.reduce((sum, pi
 export const total = state => state.originals.reduce((sum, value) => sum + value * 2, 0);
 const copyPallets = pallets => pallets.map(pieces => pieces.map(piece => ({ ...piece })));
 function startingPallets(values) {
-  return values.map((value, origin) => Array.from({ length: value }, (_, ring) => ({ id: `${origin}-${ring}`, root: `${origin}-${ring}`, origin, halves: 2 })));
+  return values.map((value, origin) => Array.from({ length: value }, (_, ring) => ({ id: `${origin}-${ring}`, root: `${origin}-${ring}`, origin, family: startingFamily(origin, ring), halves: 2 })));
 }
 export function createState(key = 'whole') {
   const shipment = SHIPMENTS[key];
@@ -28,6 +29,7 @@ export function assertConserved(state) {
     if (pieces.filter(piece => piece.origin === origin).reduce((sum, piece) => sum + piece.halves, 0) !== state.originals[origin] * 2) throw new Error('Original quantity was not conserved.');
   }
   for (const piece of pieces) {
+    familyFor(piece);
     if (![1, 2].includes(piece.halves) || !Number.isInteger(piece.origin) || !state.originals.hasOwnProperty(piece.origin)) throw new Error('Invalid piece.');
   }
   return true;
