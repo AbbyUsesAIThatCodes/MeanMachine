@@ -8,6 +8,13 @@ export function bindAnswerCues(form, { checks, pendingMessage, readyMessage }) {
     const input = form.querySelector(`#${check.id}`);
     const wrapper = document.createElement('span'); wrapper.className = 'answer-field';
     input.before(wrapper); wrapper.append(input);
+    const particles = document.createElement('span'); particles.className = 'answer-particles'; particles.setAttribute('aria-hidden', 'true');
+    for (let index = 0; index < 3; index++) {
+      const particle = document.createElement('span'); particle.className = `answer-particle${index === 1 ? ' is-translucent' : ''}`;
+      particle.innerHTML = '<svg viewBox="0 0 14 14" focusable="false"><path d="M2 1.5 L12 7 L2 12.5 Z" /></svg>';
+      particles.append(particle);
+    }
+    wrapper.append(particles);
     const marker = document.createElement('span'); marker.className = 'answer-ready';
     marker.textContent = '✓ Ready'; marker.setAttribute('aria-hidden', 'true'); wrapper.append(marker);
     const field = { ...check, input, wrapper, engaged: false };

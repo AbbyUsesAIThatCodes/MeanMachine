@@ -2,9 +2,11 @@
 
 A local 3D classroom game for exploring the arithmetic mean by sharing colorful foam packing rings equally among pallets.
 
-**Status: Local Review.** Prediction, sharing, calculation, and explanation remain in that order. Required answers receive a gentle four-second gold cycle until the field or answer button is engaged, followed by a steady border and ready cue. Whole top gears split on double-click; either of two matching adjacent top halves can merge the pair. Keyboard controls provide the same actions. Original pallet records remain visible and fixed. No publication or deployment is authorized.
+**Status: Local Review.** Prediction, sharing, calculation, and explanation remain in that order. Gold triangles travel clockwise around the required field until it or its answer button is engaged; the steady border and ready cue remain. Whole top gears split on double-click; either of two matching adjacent top halves can merge the pair. Keyboard controls provide the same actions. Original pallet records remain visible and fixed. No publication or deployment is authorized.
 
 ## Run The Local Prototype
+
+Six pallets retain the original Overview/Front View angles and controls with the owner's approved fixed wider framing. Cargo moves, splits, merges, undo and reset do not refit the camera. See [Clockwise Particles And Stable Camera Review](docs/CLOCKWISE-CAMERA-REVIEW.md).
 
 Use Node 22.12+ and the pinned dependencies already present in this review checkout. Run `npm test`, then `npm run dev` and open `http://127.0.0.1:4174` (or set `MEAN_DEV_PORT`). These invoke the same package scripts as pnpm. No dependency or browser installation is part of this review. The two invented shipments remain **2, 4, 9** and **2, 5**. Record a prediction, share equally, dispatch, calculate, and explain.
 

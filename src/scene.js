@@ -37,7 +37,7 @@ export function createPresentation(container, onPalletClick, { onArrive, onStatu
   const ringObjects = new Map();
   let pallets = [], highlights = [], state = null, currentKey = null, lastPallets = null;
   let phase = 'exterior', introStarted = null, reducedMotion = false, contextLost = false, activeMotion = null, view = 'overview';
-  let teachingPose;
+  let teachingPose, fittedArea = null;
   let gesture = null, hovered = null, dropTarget = null, suppressClick = false;
   let press = null, completedPress = null, pendingClick = null, hoverAction = null, hoverKey = '';
   const glows = Array.from({ length: 2 }, () => {
@@ -64,12 +64,17 @@ export function createPresentation(container, onPalletClick, { onArrive, onStatu
   }
   function fitTeachingView() {
     if (state?.pallets.length > 3) {
-      const positions = palletLayout(state.pallets.length), area = teachingArea();
+      const positions = palletLayout(state.pallets.length), area = fittedArea ||= teachingArea();
+      // Fit once from immutable shipment quantities, never the current stacks.
+      // Six pallets reserve enough height even if all cargo reaches one pallet.
+      const height = state.pallets.length === 6 ? state.originals.reduce((sum, value) => sum + value, 0) : Math.max(...state.originals);
       const min = new THREE.Vector3(Math.min(...positions.map(p => p.x)) - 1.4, floorY, Math.min(...positions.map(p => p.z)) - 1.2);
-      const max = new THREE.Vector3(Math.max(...positions.map(p => p.x)) + 1.4, floorY + 0.29 + Math.max(...loads(state)) * RING_THICKNESS / 2 + 0.25, Math.max(...positions.map(p => p.z)) + 1.8);
+      const max = new THREE.Vector3(Math.max(...positions.map(p => p.x)) + 1.4, floorY + 0.29 + height * RING_THICKNESS + 0.25, Math.max(...positions.map(p => p.z)) + 1.8);
       const center = min.clone().add(max).multiplyScalar(0.5);
-      const direction = new THREE.Vector3(0, view === 'front' ? 0.62 : 0.72, view === 'front' ? 0.78 : 0.69).normalize();
-      const right = new THREE.Vector3(1, 0, 0), up = new THREE.Vector3().crossVectors(direction, right);
+      const direction = (state.pallets.length === 6
+        ? new THREE.Vector3(...(view === 'front' ? [0, 0.6, 1] : [0.22, 0.57, 0.91]))
+        : new THREE.Vector3(0, view === 'front' ? 0.62 : 0.72, view === 'front' ? 0.78 : 0.69)).normalize();
+      const right = new THREE.Vector3().crossVectors(new THREE.Vector3(0, 1, 0), direction).normalize(), up = new THREE.Vector3().crossVectors(direction, right);
       const tanY = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
       const fitX = tanY * camera.aspect * Math.max(280, area.right - area.left) / innerWidth;
       const fitY = tanY * Math.max(220, area.bottom - area.top) / innerHeight;
@@ -91,7 +96,7 @@ export function createPresentation(container, onPalletClick, { onArrive, onStatu
   }
   function fitOverlay(amount = 1) {
     if (state?.pallets.length > 3) {
-      const area = teachingArea();
+      const area = fittedArea || teachingArea();
       camera.setViewOffset(innerWidth, innerHeight, (innerWidth / 2 - (area.left + area.right) / 2) * amount, (innerHeight / 2 - (area.top + area.bottom) / 2) * amount, innerWidth, innerHeight);
       camera.updateProjectionMatrix(); return;
     }
@@ -160,7 +165,7 @@ export function createPresentation(container, onPalletClick, { onArrive, onStatu
       object.userData.palletIndex = placement.pallet;
     }
     updateLabels(next); lastPallets = next.pallets;
-    if (next.pallets.length > 3 && phase === 'teaching') { fitTeachingView(); applyPose(teachingPose); fitOverlay(); }
+    // Cargo changes never replace the chosen camera pose or view offset.
   }
   function sync(next, selected) {
     if (state && (next.pending || next.stage !== state.stage || next.pallets !== state.pallets)) clearClickIntent();
@@ -169,7 +174,7 @@ export function createPresentation(container, onPalletClick, { onArrive, onStatu
     if (next.pending || next.stage !== 'sharing') showHover(null);
     const layoutKey = `${next.key}:${next.originals.join(',')}`;
     if (currentKey !== layoutKey) {
-      currentKey = layoutKey; createPallets(); lastPallets = null;
+      currentKey = layoutKey; fittedArea = null; createPallets(); lastPallets = null;
       if (phase === 'teaching') { fitTeachingView(); applyPose(teachingPose); fitOverlay(); }
     }
     if (!next.pending && next.pallets !== lastPallets) arrange(next);
@@ -439,7 +444,7 @@ export function createPresentation(container, onPalletClick, { onArrive, onStatu
   renderer.domElement.addEventListener('dblclick', event => event.preventDefault());
   window.addEventListener('resize', () => {
     cancelDrag(); showHover(null);
-    camera.aspect = innerWidth / innerHeight; camera.clearViewOffset(); camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight);
+    fittedArea = null; camera.aspect = innerWidth / innerHeight; camera.clearViewOffset(); camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight);
     if (phase === 'teaching') { fitTeachingView(); applyPose(teachingPose); fitOverlay(); }
     render();
   });
@@ -452,6 +457,13 @@ export function createPresentation(container, onPalletClick, { onArrive, onStatu
       stage: state.stage, pending: state.pending ? { ...state.pending } : null, originals: [...state.originals],
       interaction: { held: gesture?.moved ? gesture.pieceId : null, hovered: hovered?.userData.identity || null, destination: dropTarget, actionPreview: hoverAction ? { ...hoverAction } : null, pendingSingleClick: Boolean(pendingClick) },
       pallets: pallets.map(p => ({ id: p.userData.id, quantity: p.userData.quantity, position: p.position.toArray() })),
+      palletLabelBounds: pallets.map(pallet => {
+        const tag = pallet.getObjectByName('Quantity Tag'); tag.geometry.computeBoundingBox();
+        const { min, max } = tag.geometry.boundingBox;
+        const points = [new THREE.Vector3(min.x, min.y, 0), new THREE.Vector3(min.x, max.y, 0), new THREE.Vector3(max.x, min.y, 0), new THREE.Vector3(max.x, max.y, 0)]
+          .map(point => { const p = tag.localToWorld(point).project(camera); return { x: (p.x + 1) * innerWidth / 2, y: (1 - p.y) * innerHeight / 2 }; });
+        return { id: pallet.userData.id, points, width: Math.max(...points.map(p => p.x)) - Math.min(...points.map(p => p.x)), height: Math.max(...points.map(p => p.y)) - Math.min(...points.map(p => p.y)) };
+      }),
       rings: [...ringObjects.values()].filter(o => o.visible).map(o => ({ ...o.userData, position: o.position.toArray(), scale: o.scale.toArray(), rotation: [o.rotation.x, o.rotation.y, o.rotation.z] })),
       ringSurfacePoints: [...ringObjects.values()].map(object => { const projected = object.position.clone().add(new THREE.Vector3(0, RING_THICKNESS * object.userData.fraction / 2, 0.7)).project(camera); return { identity: object.userData.identity, x: (projected.x + 1) * innerWidth / 2, y: (1 - projected.y) * innerHeight / 2 }; }),
       topPickPoints: state.pallets.map(pieces => { const object = ringObjects.get(pieces.at(-1)?.id); if (!object) return null; const projected = object.position.clone().add(new THREE.Vector3(0, RING_THICKNESS * object.userData.fraction, 0.45)).project(camera); return { x: (projected.x + 1) * innerWidth / 2, y: (1 - projected.y) * innerHeight / 2, identity: object.userData.identity }; }),

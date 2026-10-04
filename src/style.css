@@ -70,14 +70,34 @@ h2 { font-size: 21px; margin: 8px 0 12px; line-height: 1.15; }
 .answer-guidance.is-ready { background: #e8f0e4; border-color: #34774b; }
 .answer-field { display: block; position: relative; margin-top: 3px; }
 .answer-field.is-current > input, .answer-field.is-current > textarea { border-color: #b27c09; box-shadow: 0 0 0 3px #f2c95870, 0 0 13px #e3b73a55; }
-.answer-field.is-current.needs-attention::after { content: '✦  ✧  ✦'; pointer-events: none; position: absolute; right: 9px; top: -13px; color: #9d6900; font-size: 20px; letter-spacing: 8px; animation: answer-sparkle 4s ease-in-out infinite; }
+.answer-field > input, .answer-field > textarea { display: block; }
+.answer-particles { position: absolute; inset: 0; pointer-events: none; display: none; }
+.answer-field.is-current.needs-attention > .answer-particles { display: block; }
+.answer-particle { position: absolute; width: 14px; height: 14px; left: 10px; top: 1px; transform: translate(-50%, -50%); }
+.answer-particle svg { display: block; overflow: visible; filter: drop-shadow(0 0 3px #f3c54a99); }
+.answer-particle path { fill: #ffe079; stroke: #bf8910; stroke-width: 1.2; stroke-linejoin: round; }
+.answer-particle.is-translucent path { fill-opacity: .3; }
+.answer-field.is-current.needs-attention .answer-particle { animation: answer-orbit 8s linear infinite; }
+.answer-field.is-current.needs-attention .answer-particle:nth-child(2) { animation-delay: -.18s; }
+.answer-field.is-current.needs-attention .answer-particle:nth-child(3) { animation-delay: -.36s; }
 .answer-field.is-current.needs-attention > input, .answer-field.is-current.needs-attention > textarea { animation: answer-glow 4s ease-in-out infinite; }
 .answer-ready { display: none; position: absolute; right: 8px; top: -9px; background: #fffdf4; color: #28673e; padding: 0 4px; font-size: 10px; font-weight: bold; pointer-events: none; }
 .answer-field.is-ready > .answer-ready { display: inline; }
 .answer-field.is-ready > input, .answer-field.is-ready > textarea { border-color: #528264; }
-@keyframes answer-sparkle { 0%, 100% { opacity: .3; transform: translateY(2px) scale(.9); } 40%, 60% { opacity: 1; transform: translateY(-2px) scale(1); } }
+@keyframes answer-orbit {
+  0% { left: 10px; top: 1px; transform: translate(-50%, -50%) rotate(0deg); }
+  38% { left: calc(100% - 10px); top: 1px; transform: translate(-50%, -50%) rotate(0deg); }
+  40% { left: calc(100% - 1px); top: 10px; transform: translate(-50%, -50%) rotate(90deg); }
+  48% { left: calc(100% - 1px); top: calc(100% - 10px); transform: translate(-50%, -50%) rotate(90deg); }
+  50% { left: calc(100% - 10px); top: calc(100% - 1px); transform: translate(-50%, -50%) rotate(180deg); }
+  88% { left: 10px; top: calc(100% - 1px); transform: translate(-50%, -50%) rotate(180deg); }
+  90% { left: 1px; top: calc(100% - 10px); transform: translate(-50%, -50%) rotate(270deg); }
+  98% { left: 1px; top: 10px; transform: translate(-50%, -50%) rotate(270deg); }
+  100% { left: 10px; top: 1px; transform: translate(-50%, -50%) rotate(360deg); }
+}
 @keyframes answer-glow { 0%, 100% { box-shadow: 0 0 0 3px #f2c95870, 0 0 13px #e3b73a55; } 40%, 60% { box-shadow: 0 0 0 5px #f2c95890, 0 0 19px #e3b73a88; } }
-.reduce-motion .answer-field.is-current::after { animation: none; content: none; }
+.reduce-motion .answer-field.is-current .answer-particles { display: none; }
+.reduce-motion .answer-field.is-current .answer-particle { animation: none; }
 .reduce-motion .answer-field.is-current > input, .reduce-motion .answer-field.is-current > textarea { animation: none; }
 .gear-hint { position: fixed; left: 270px; right: 350px; top: 125px; margin: 0 auto; width: fit-content; max-width: calc(100% - 630px); padding: 6px 10px; background: #fff8daf2; border: 1px solid #b89943; border-radius: 9px; font-size: 12px; text-align: center; z-index: 3; pointer-events: none; }
 body[data-pallet-count='4'] .loads, body[data-pallet-count='5'] .loads, body[data-pallet-count='6'] .loads { gap: 5px; }
@@ -92,4 +112,4 @@ body[data-pallet-count='4'] .load .piece, body[data-pallet-count='5'] .load .pie
 @media (max-width: 760px) { body { min-width: 0; overflow: auto; } #app { position: relative; padding: 105px 12px 160px; display: grid; gap: 12px; } .shipment, .activity { position: relative; top: auto; left: auto; right: auto; width: auto; max-height: none; } .shipment { order: 0; } .activity { order: 2; } .loads { order: 1; position: relative; left: auto; right: auto; bottom: auto; padding: 120px 0 0; } .topbar { align-items: center; } .toolbar { flex-wrap: wrap; justify-content: end; max-width: 180px; } .toolbar button { font-size: 11px; } .motion { font-size: 11px; } .reference { left: 12px; right: 12px; width: auto; } .bottom-toolbar { left: 8px; right: 8px; bottom: 80px; gap: 6px; } .bottom-toolbar button { padding: 6px; font-size: 11px; } }
 @media (max-width: 1050px) { .gear-hint { left: 222px; right: 307px; max-width: calc(100% - 540px); } }
 @media (max-width: 760px) { .gear-hint { left: 12px; right: 12px; top: auto; bottom: 130px; max-width: calc(100% - 24px); } .loads { flex-wrap: wrap; } .load { flex-basis: 28%; } }
-@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; } .answer-field.is-current.needs-attention::after { animation: none; content: none; } .answer-field.is-current.needs-attention > input, .answer-field.is-current.needs-attention > textarea { animation: none; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; } .answer-field.is-current.needs-attention .answer-particles { display: none; } .answer-field.is-current.needs-attention .answer-particle, .answer-field.is-current.needs-attention > input, .answer-field.is-current.needs-attention > textarea { animation: none; } }

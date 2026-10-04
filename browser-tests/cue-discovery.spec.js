@@ -7,8 +7,8 @@ const cue = (page, id) => page.locator(`#${id}`).evaluate(input => ({
   engaged: input.dataset.cueEngaged, state: input.dataset.answerState,
   animation: getComputedStyle(input).animationName, duration: getComputedStyle(input).animationDuration,
   iterations: getComputedStyle(input).animationIterationCount, border: getComputedStyle(input).boxShadow,
-  sparkle: getComputedStyle(input.parentElement, '::after').animationName,
-  sparkleDuration: getComputedStyle(input.parentElement, '::after').animationDuration,
+  sparkle: getComputedStyle(input.parentElement.querySelector('.answer-particle')).animationName,
+  sparkleDuration: getComputedStyle(input.parentElement.querySelector('.answer-particle')).animationDuration,
 }));
 
 for (const width of [1366, 1024]) test(`the existing six-pallet example is directly discoverable at ${width}px`, async ({ page }) => {
@@ -30,7 +30,7 @@ for (const width of [1366, 1024]) test(`the existing six-pallet example is direc
 
 test('the slow cue repeats until field or answer-button engagement and stays quiet after incorrect input', async ({ page }) => {
   await enter(page);
-  expect(await cue(page, 'prediction')).toMatchObject({ engaged: 'false', animation: 'answer-glow', duration: '4s', iterations: 'infinite', sparkle: 'answer-sparkle', sparkleDuration: '4s' });
+  expect(await cue(page, 'prediction')).toMatchObject({ engaged: 'false', animation: 'answer-glow', duration: '4s', iterations: 'infinite', sparkle: 'answer-orbit', sparkleDuration: '8s' });
   await page.waitForTimeout(4300);
   expect(await page.locator('#prediction').evaluate(e => e.getAnimations()[0].currentTime)).toBeGreaterThan(4000);
   expect(await cue(page, 'prediction')).toMatchObject({ animation: 'answer-glow', iterations: 'infinite' });

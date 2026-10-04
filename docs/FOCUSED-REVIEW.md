@@ -1,5 +1,7 @@
 # Focused Local Review
 
+For the current follow-up to accepted Build011, see [Clockwise Particles And Stable Camera Review](CLOCKWISE-CAMERA-REVIEW.md). It replaces the stationary sparkle with clockwise gold triangles and holds the six-pallet camera steady using approved wider framing with the original angles/controls.
+
 The initial focused review produced accepted Build008 at `29c911c18862dffac9fa521842273247f36cf34f`. The current isolated correction branch is `review/discoverable-six-pallets-slow-cue-20261004`; see [Cue And Example Discovery Review](CUE-DISCOVERY-REVIEW.md). The original source, portable Builds004/008, historical evidence and existing browser sessions remain separate. No dependency/browser download, remote push, PR, Actions run, merge or deployment belongs to this task.
 
 ## Accepted Lesson And Controls
