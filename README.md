@@ -2,13 +2,13 @@
 
 A local 3D classroom game for exploring the arithmetic mean by sharing colorful foam packing rings equally among pallets.
 
-**Status: Local Review.** Prediction, sharing, calculation, and explanation remain in that order. Required answers receive a brief golden sparkle followed by a steady border and a ready cue. Whole top gears split on double-click; either of two matching adjacent top halves can merge the pair. Keyboard controls provide the same actions. Original pallet records remain visible and fixed. No publication or deployment is authorized.
+**Status: Local Review.** Prediction, sharing, calculation, and explanation remain in that order. Required answers receive a gentle four-second gold cycle until the field or answer button is engaged, followed by a steady border and ready cue. Whole top gears split on double-click; either of two matching adjacent top halves can merge the pair. Keyboard controls provide the same actions. Original pallet records remain visible and fixed. No publication or deployment is authorized.
 
 ## Run The Local Prototype
 
 Use Node 22.12+ and the pinned dependencies already present in this review checkout. Run `npm test`, then `npm run dev` and open `http://127.0.0.1:4174` (or set `MEAN_DEV_PORT`). These invoke the same package scripts as pnpm. No dependency or browser installation is part of this review. The two invented shipments remain **2, 4, 9** and **2, 5**. Record a prediction, share equally, dispatch, calculate, and explain.
 
-**Reference → Larger Layout Review** opens fixed four-, five-, or six-pallet examples. Larger arrangements use two staggered rows, camera fitting, and readable pallet letters/quantities. This is a bounded layout review, not a generated exercise bank. See [Focused Local Review](docs/FOCUSED-REVIEW.md).
+Choose **Try 6-Pallet Example** beside the shipment controls for direct access to the existing six-pallet task. **Reference → Larger Layout Review** retains all three fixed four-, five-, and six-pallet examples. Larger arrangements use two staggered rows, camera fitting, and readable pallet letters/quantities. No generated exercise bank was added. See [Cue And Example Discovery Review](docs/CUE-DISCOVERY-REVIEW.md) and [Focused Local Review](docs/FOCUSED-REVIEW.md).
 
 `npm run build` creates an identified folder and review ZIP under `artifacts/`. Extract the ZIP and open **Start-Mean-Machine.html** in Vivaldi or Edge to play offline without a server or dependency install. Automated verification uses installed Edge; Vivaldi is the requested manual review browser. The build includes the Three.js MIT license and full build manifest.
 

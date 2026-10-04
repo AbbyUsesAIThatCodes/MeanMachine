@@ -37,7 +37,7 @@ test('golden required-answer cues explain the existing lock and clear when each 
   await page.mouse.dblclick(point.x, point.y);
   expect(pieces(await scene(page))).toEqual(pieces(initial));
   await expect(page.locator('#prediction')).toBeFocused();
-  expect(await page.locator('#prediction').evaluate(e => getComputedStyle(e.parentElement, '::after').animationIterationCount)).toBe('1');
+  expect(await page.locator('#prediction').evaluate(e => getComputedStyle(e.parentElement, '::after').animationIterationCount)).toBe('infinite');
   await page.screenshot({ path: 'test-results/golden-prediction.png' });
   await page.locator('#prediction').fill('4');
   await expect(page.locator('#prediction')).toHaveAttribute('data-answer-state', 'ready');

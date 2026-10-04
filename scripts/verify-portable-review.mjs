@@ -54,7 +54,8 @@ async function exercise(name, url, offline = false) {
     await page.goto(url); await page.waitForFunction(() => window.__meanScene);
     await page.locator('#reduce-motion').check(); await page.locator('#skip-intro').click();
     if (kind === 'halves') await page.locator('#next').click();
-    if (typeof kind === 'number') {
+    if (kind === 6) await page.getByRole('button', { name: 'Try 6-Pallet Example', exact: true }).click();
+    else if (typeof kind === 'number') {
       await page.locator('#reference-button').click(); await page.getByText('Larger Layout Review', { exact: true }).click();
       await page.locator('#review-pallet-count').selectOption(String(kind)); await page.locator('#open-layout-review').click();
     }

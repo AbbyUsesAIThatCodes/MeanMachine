@@ -65,7 +65,7 @@ function render() {
   }).join('');
   $('#loads').querySelectorAll('button').forEach(button => button.addEventListener('click', () => selectPallet(Number(button.dataset.pallet))));
   $('#undo').disabled = busy || !sharing || !state.history.length;
-  for (const id of ['reset', 'replay', 'next']) $(`#${id}`).disabled = busy;
+  for (const id of ['reset', 'replay', 'next', 'six-pallet-example']) $(`#${id}`).disabled = busy;
   for (const id of ['overview', 'front-view']) $(`#${id}`).disabled = busy;
   $('#next').textContent = state.key === 'whole' ? 'Try Half-Rings' : 'Try Whole Rings';
   $('#stage-title').textContent = stageTitles[state.stage];
@@ -154,7 +154,7 @@ async function animateAction(next) {
 }
 $('#undo').addEventListener('click', () => safely(() => { state = math.undo(state); selected = null; announce('Last move, split, or merge undone.'); render(); }));
 $('#reset').addEventListener('click', () => safely(() => { state = math.reset(state); selected = null; announce('Original arrangement restored. Your first prediction is retained.'); render(); }));
-$('#replay').addEventListener('click', () => safely(() => { state = math.replay(state); selected = null; announce('Same shipment, fresh prediction.'); render(); chooseStageFocus(); }));
+$('#replay').addEventListener('click', () => safely(() => { state = math.replay(state); selected = null; stageRendered = null; announce('Same shipment, fresh prediction.'); render(); chooseStageFocus(); }));
 $('#next').addEventListener('click', () => { if (state.pending || dragging) return; state = math.createState(state.key === 'whole' ? 'halves' : 'whole'); layoutReview = false; selected = null; source = state.pallets.length - 1; destination = 0; stageRendered = null; announce('New shipment ready. Start with a prediction.'); render(); chooseStageFocus(); });
 $('#reference-button').addEventListener('click', () => { const open = $('#reference').hidden; $('#reference').hidden = !open; $('#reference-button').setAttribute('aria-expanded', String(open)); if (open) $('#close-reference').focus(); });
 function closeReference() { $('#reference').hidden = true; $('#reference-button').setAttribute('aria-expanded', 'false'); $('#reference-button').focus(); }
@@ -162,14 +162,17 @@ $('#close-reference').addEventListener('click', closeReference);
 $('#enter-factory').addEventListener('click', () => { $('#enter-factory').disabled = true; $('#intro-title').textContent = 'Entering The Factory'; presentation.startIntro(); });
 $('#skip-intro').addEventListener('click', () => presentation.skipIntro());
 motion.addEventListener('change', () => { document.documentElement.classList.toggle('reduce-motion', motion.checked); presentation.setReducedMotion(motion.checked); });
-$('#open-layout-review').addEventListener('click', () => {
+function openLayoutReview(count) {
   if (state.pending || dragging || inIntro) return;
-  const values = LAYOUT_REVIEWS[Number($('#review-pallet-count').value)];
+  const values = LAYOUT_REVIEWS[count];
   if (!values) return;
   state = math.createState('halves', values); layoutReview = true;
   selected = null; source = state.pallets.length - 1; destination = 0; stageRendered = null;
-  closeReference(); announce('Fixed layout review ready. Start with your prediction.'); render(); chooseStageFocus();
-});
+  if (!$('#reference').hidden) closeReference();
+  announce(`${state.pallets.length}-pallet example ready. Start with your prediction.`); render(); chooseStageFocus();
+}
+$('#open-layout-review').addEventListener('click', () => openLayoutReview(Number($('#review-pallet-count').value)));
+$('#six-pallet-example').addEventListener('click', () => openLayoutReview(6));
 $('#overview').addEventListener('click', () => { presentation.setView('overview'); $('#overview').setAttribute('aria-pressed', 'true'); $('#front-view').setAttribute('aria-pressed', 'false'); });
 $('#front-view').addEventListener('click', () => { presentation.setView('front'); $('#overview').setAttribute('aria-pressed', 'false'); $('#front-view').setAttribute('aria-pressed', 'true'); });
 document.addEventListener('keydown', event => { if (event.key === 'Escape' && !$('#reference').hidden) closeReference(); });

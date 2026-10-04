@@ -1,4 +1,5 @@
-// Point to the next required answer without moving focus or repeating a sparkle.
+// Each new field prompts gently until engaged. Validation never restarts a
+// field the student already acknowledged; a new form creates fresh prompts.
 export function bindAnswerCues(form, { checks, pendingMessage, readyMessage }) {
   const guidance = document.createElement('p');
   guidance.id = 'answer-guidance'; guidance.className = 'answer-guidance';
@@ -9,24 +10,37 @@ export function bindAnswerCues(form, { checks, pendingMessage, readyMessage }) {
     input.before(wrapper); wrapper.append(input);
     const marker = document.createElement('span'); marker.className = 'answer-ready';
     marker.textContent = '✓ Ready'; marker.setAttribute('aria-hidden', 'true'); wrapper.append(marker);
-    input.setAttribute('aria-describedby', guidance.id); input.addEventListener('input', refresh);
-    return { ...check, input, wrapper };
+    const field = { ...check, input, wrapper, engaged: false };
+    input.setAttribute('aria-describedby', guidance.id);
+    for (const event of ['pointerdown', 'click', 'keydown', 'input']) {
+      input.addEventListener(event, () => { field.engaged = true; refresh(); });
+    }
+    return field;
   });
   let required = null;
+  function engageRequired() {
+    const field = fields.find(field => field.input === required);
+    if (field) field.engaged = true;
+    refresh();
+  }
+  // Capture engagement before validation can report or focus an invalid answer.
+  for (const event of ['pointerdown', 'click']) form.addEventListener(event, event => {
+    if (event.target.closest('button[type="submit"], button:not([type]), input[type="submit"]')) engageRequired();
+  }, true);
+  form.addEventListener('submit', engageRequired, true);
   function refresh() {
     const current = fields.find(field => !field.valid(field.input.value)); required = current?.input || null;
     for (const field of fields) {
       const valid = field.valid(field.input.value);
       field.wrapper.classList.toggle('is-current', field === current); field.wrapper.classList.toggle('is-ready', valid);
+      field.wrapper.classList.toggle('needs-attention', field === current && !field.engaged);
       field.input.dataset.answerState = valid ? 'ready' : field === current ? 'required' : 'waiting';
+      field.input.dataset.cueEngaged = String(field.engaged);
       field.input.setAttribute('aria-invalid', String(Boolean(field.input.value.trim()) && !valid));
     }
     guidance.classList.toggle('is-ready', !current);
     guidance.textContent = current ? `${pendingMessage} Next: ${current.label}.` : readyMessage;
   }
   refresh();
-  return { refresh, focusRequired() { required?.focus({ preventScroll: true }); }, reveal() {
-    const current = fields.find(field => field.input === required);
-    if (current) { current.wrapper.classList.remove('is-current'); void current.wrapper.offsetWidth; current.wrapper.classList.add('is-current'); }
-  } };
+  return { refresh, focusRequired() { required?.focus({ preventScroll: true }); }, reveal: refresh };
 }

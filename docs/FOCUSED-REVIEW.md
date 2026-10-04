@@ -1,10 +1,10 @@
 # Focused Local Review
 
-This isolated review continues from preserved commit `21411cde59b2713c47893edd876fc7fd3d1c964f` on local branch `review/answer-cues-double-click-20261004`. The original source, portable Build004, historical evidence and existing browser sessions remain separate. No dependency/browser download, remote push, PR, Actions run, merge or deployment belongs to this task.
+The initial focused review produced accepted Build008 at `29c911c18862dffac9fa521842273247f36cf34f`. The current isolated correction branch is `review/discoverable-six-pallets-slow-cue-20261004`; see [Cue And Example Discovery Review](CUE-DISCOVERY-REVIEW.md). The original source, portable Builds004/008, historical evidence and existing browser sessions remain separate. No dependency/browser download, remote push, PR, Actions run, merge or deployment belongs to this task.
 
 ## Accepted Lesson And Controls
 
-The original two shipments stay **2, 4, 9** and **2, 5**, with prediction → sharing → calculation → explanation unchanged. A brief gold sparkle identifies the next required answer, followed by a steady gold border. Valid fields show a ready marker; the instruction states why movement is paused and what action continues the lesson. Reduced motion retains the static cue. Calculation asks for **Total Gears**, **Number Of Pallets**, and **Mean: Gears Per Pallet**.
+The original two shipments stay **2, 4, 9** and **2, 5**, with prediction → sharing → calculation → explanation unchanged. A gentle four-second gold cycle identifies the next required answer until its field or answer button is engaged; the steady border remains afterward. Valid fields show a ready marker; guidance explains why movement is paused and what continues the lesson. Reduced motion uses a static cue. Calculation asks for **Total Gears**, **Number Of Pallets**, and **Mean: Gears Per Pallet**.
 
 Double-click a whole top gear to split it into two equal layers. Double-click either half of a matching pair at the top of the same pallet to merge. Both eligible halves highlight, with a short hover hint. Compatibility requires the same original gear root, origin and family; no remote or buried partner is selected. Split/merge buttons provide keyboard equivalents. A drag cancels pending clicks, and phase/animation locks revalidate every action. Undo preserves exact piece identity and quantities.
 
@@ -12,7 +12,7 @@ Double-click a whole top gear to split it into two equal layers. Double-click ei
 
 One-to-six-pallet state/layout support preserves original records and exact half-unit arithmetic. The original two/three-pallet geometry is unchanged. Four/six use balanced two/two and three/three rows; five uses three front and two rear. Rear centers are offset by half the horizontal pitch. Larger layouts fit both camera views to the cargo and available space; tilted placards display the pallet letter and current quantity.
 
-**Reference → Larger Layout Review** exposes three fixed acceptance examples: four `[1,3,2,6]`, five `[1,3,5,2,4]`, and six `[1,5,2,4,3,3]`. Each has mean three and follows the accepted lesson order. Opening an example explicitly starts a new shipment in that page. This is not a recipe generator or question bank. Reset/replay retain that example's original quantities; the shipment button returns to the original lessons.
+**Try 6-Pallet Example** beside the shipment controls opens the existing six-pallet example directly. **Reference → Larger Layout Review** retains all three fixed examples: four `[1,3,2,6]`, five `[1,3,5,2,4]`, and six `[1,5,2,4,3,3]`. Each has mean three and follows the accepted lesson order. Opening an example starts a new shipment in that page. This is not a recipe generator or question bank. Reset/replay retain that example's original quantities; the shipment button returns to the original lessons.
 
 ## Validation And Evidence
 
@@ -22,7 +22,7 @@ Browser QA covers both complete original lessons, gold/ready cues, accessible fi
 
 `scripts/verify-portable-review.mjs` verifies ZIP CRCs and byte parity, extracts into a directory named by the immutable build identity, completes both original lessons and all three larger examples with networking disabled, and compares scene states with the served build. Optional `MEAN_SOURCE_URL` also compares the current development source. Results include the full identity, ZIP SHA-256, extracted-file hashes, state comparisons, browser errors and external-request counts. Generated evidence is under `.build/portable-review/`; the current production browser report is `.build/focused-browser-production.json`.
 
-Automation uses the installed Edge browser. Installed Vivaldi's headless process terminated before a test page opened; that run gives no gameplay result. The final launcher is prepared for later manual Vivaldi review; the owner's latest instruction requests no new windows or sound on completion. Physical Chromebook/projector acceptance and screen-reader use remain unverified. Discussion notes remain session-only.
+Automation uses installed Edge. The owner reviewed Build008 in Vivaldi and accepted splitting, merging and drag behavior. This correction still awaits manual Vivaldi review; its launcher is delivered without opening a new window or playing sound. Vivaldi headless automation previously terminated before opening a page. Physical Chromebook/projector acceptance and screen-reader use remain unverified. Discussion notes remain session-only.
 
 ## Build Identity
 
