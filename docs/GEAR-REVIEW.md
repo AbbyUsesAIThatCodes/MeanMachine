@@ -1,5 +1,7 @@
 # Gear Interaction Review
 
+Historical October 3 checkpoint. Its dependency/publication gates describe that session; the current local-only scope and existing pinned toolchain are documented in [Focused Local Review](FOCUSED-REVIEW.md). The original source copy of this historical report remains preserved.
+
 ## Original Source Baseline
 
 Work starts from original Jess revision `5ae1507e496d31a95f46d36491d394f8e4187e05`, preserved in PR #10 with full ancestry. No reverse-engineered or derived source is used.
@@ -21,7 +23,7 @@ Issue #9 adds the actual version, Foam Rings codename and short build designatio
 
 Mechanics, learning flow, readability and accessibility take priority over decorative refinement. Issues #6–#8, the later machines proposal, worksheets, merge and deployment are outside this work.
 
-The owner's current authorization permits a work branch and draft PR. It supersedes the historical local-only publication restriction in AGENTS.md for this specific checkpoint. No merge or deployment is authorized.
+The owner requested a work branch and draft PR for that checkpoint, but the execution reviewer did not accept the relayed authorization, as recorded below. That historical request does not authorize publication from the current local review.
 
 ## Implemented Mechanics Checkpoint
 

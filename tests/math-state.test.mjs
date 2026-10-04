@@ -69,7 +69,7 @@ test('dispatch compares quantity rather than rounded loads or piece count', () =
 test('calculation distinguishes total, observation count and quotient errors', () => {
   const state = math.dispatch(wholeSolved()).state;
   assert.match(math.checkCalculation(state, { total: '14', count: '3', mean: '5' }).message, /total/);
-  assert.match(math.checkCalculation(state, { total: '15', count: '15', mean: '5' }).message, /observations/);
+  assert.match(math.checkCalculation(state, { total: '15', count: '15', mean: '5' }).message, /pallets/);
   assert.match(math.checkCalculation(state, { total: '15', count: '3', mean: '4' }).message, /Divide/);
   const result = math.checkCalculation(state, { total: '15', count: '3', mean: '5' });
   assert.equal(result.state.stage, 'explanation');

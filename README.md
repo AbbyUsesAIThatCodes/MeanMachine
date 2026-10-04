@@ -2,15 +2,17 @@
 
 A local 3D classroom game for exploring the arithmetic mean by sharing colorful foam packing rings equally among pallets.
 
-**Status: Local Review.** The two-round prototype includes the shared factory exterior and animated entry, exact whole/half-ring sharing, keyboard and 3D click controls, prediction, calculation, and explanation. Original observations remain visible while cargo moves. No publication or deployment is authorized.
+**Status: Local Review.** Prediction, sharing, calculation, and explanation remain in that order. Required answers receive a brief golden sparkle followed by a steady border and a ready cue. Whole top gears split on double-click; either of two matching adjacent top halves can merge the pair. Keyboard controls provide the same actions. Original pallet records remain visible and fixed. No publication or deployment is authorized.
 
 ## Run The Local Prototype
 
-Use Node 22.12+ and pnpm. Run `pnpm install`, `pnpm test`, then `pnpm dev` and open `http://127.0.0.1:4174`. The two invented shipments are **2, 4, 9** and **2, 5**. Record a prediction, click a source and destination or use the keyboard controls, dispatch equal loads, then calculate and explain.
+Use Node 22.12+ and the pinned dependencies already present in this review checkout. Run `npm test`, then `npm run dev` and open `http://127.0.0.1:4174` (or set `MEAN_DEV_PORT`). These invoke the same package scripts as pnpm. No dependency or browser installation is part of this review. The two invented shipments remain **2, 4, 9** and **2, 5**. Record a prediction, share equally, dispatch, calculate, and explain.
 
-`pnpm build` creates an identified folder and review ZIP under `artifacts/`. Extract the ZIP and open **Start-Mean-Machine.html** in Chrome or Edge to play offline without a server or dependency install. The build includes the Three.js MIT license and full build manifest.
+**Reference → Larger Layout Review** opens fixed four-, five-, or six-pallet examples. Larger arrangements use two staggered rows, camera fitting, and readable pallet letters/quantities. This is a bounded layout review, not a generated exercise bank. See [Focused Local Review](docs/FOCUSED-REVIEW.md).
 
-`pnpm preview` serves the equivalent existing build on `http://127.0.0.1:4175` without minting another identity. `pnpm test:browser` expects the local dev server to be running; set `MEAN_BASE_URL=http://127.0.0.1:4175`, `MEAN_PRODUCTION=1`, and `MEAN_OFFLINE=1` for the full production suite. Tests use installed Chrome. `node scripts/verify-build.mjs` verifies the directory, ZIP, embedded manifest, standalone page, compiled identity, and current report.
+`npm run build` creates an identified folder and review ZIP under `artifacts/`. Extract the ZIP and open **Start-Mean-Machine.html** in Vivaldi or Edge to play offline without a server or dependency install. Automated verification uses installed Edge; Vivaldi is the requested manual review browser. The build includes the Three.js MIT license and full build manifest.
+
+`npm run preview` serves the existing build on `http://127.0.0.1:4175` (or `MEAN_PREVIEW_PORT`) without minting another identity. Browser tests expect a running server: set `MEAN_BASE_URL`, `MEAN_BROWSER_CHANNEL=msedge`, `MEAN_PRODUCTION=1`, and `MEAN_OFFLINE=1`, then run `npm run test:browser`. `MEAN_BROWSER_EXECUTABLE` optionally selects an installed executable. `node scripts/verify-build.mjs` verifies artifact identity; `node scripts/verify-portable-review.mjs` extracts the actual ZIP, completes both original lessons and all larger review examples offline, and compares their scene states with the served build. Its results are saved under `.build/portable-review/`.
 
 See [Local Classroom Slice](docs/LOCAL-ROADMAP.md), [Shared Asset Integration](docs/SHARED-ASSET-INTEGRATION.md), [Build Identity](docs/BUILD_IDENTITY.md), and [Working Guidance](AGENTS.md). Generated current-build details are in `.build/CURRENT_BUILD.md` after a successful build.
 

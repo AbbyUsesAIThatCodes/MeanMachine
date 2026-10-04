@@ -2,6 +2,8 @@
 
 This is the bounded implementation authorized for local development on September 30, 2026. It does not authorize publishing issues or PRs.
 
+The October 4 [Focused Local Review](FOCUSED-REVIEW.md) adds answer cues, double-click splitting/merging, pallet wording, and fixed four-to-six-pallet layout examples. The accepted prediction → sharing → calculation → explanation order remains unchanged. Generated exercises, worksheets, scenery expansion and publication remain outside the current scope.
+
 ## Proposed Issue Sequence
 
 1. **Exact Equal Sharing And Whole-Ring Classroom Flow** — The original 2,4,9 shipment stays visible; deliberate transfers reach 5,5,5 while conserving 15 units across three observations. Prediction precedes sharing, and calculation follows a successful model check. Include accessible controls, undo/reset/replay and focused state tests.

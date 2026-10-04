@@ -1,5 +1,7 @@
 # Local Checkpoint Verification
 
+This document preserves the original classroom checkpoint. The current implementation and validation procedure are in [Focused Local Review](FOCUSED-REVIEW.md); use its generated evidence files for the latest build and results.
+
 ## Verified Classroom State And Controls
 
 - Core Chrome classroom flows pass at 1366 × 768, with a separate 1024 × 768 layout check. The source/destination label association found in the first run was fixed before the successful rerun.

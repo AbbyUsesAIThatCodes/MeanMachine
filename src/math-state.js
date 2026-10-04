@@ -8,6 +8,9 @@ export const ORIGINS = Object.freeze([
   Object.freeze({ color: '#e85972', relief: 'ribbed', symbol: 'Star', glyph: '★' }),
   Object.freeze({ color: '#28aabc', relief: 'grooved', symbol: 'Diamond', glyph: '◆' }),
   Object.freeze({ color: '#f2b83f', relief: 'studded', symbol: 'Circle', glyph: '●' }),
+  Object.freeze({ color: '#44b877', relief: 'smooth', symbol: 'Square', glyph: '■' }),
+  Object.freeze({ color: '#578fea', relief: 'smooth', symbol: 'Triangle', glyph: '▲' }),
+  Object.freeze({ color: '#ce79cb', relief: 'smooth', symbol: 'Hexagon', glyph: '⬢' }),
 ]);
 export const formatQuantity = halves => halves % 2 ? `${Math.floor(halves / 2) || ''}½` : String(halves / 2);
 export const loads = state => state.pallets.map(pieces => pieces.reduce((sum, piece) => sum + piece.halves, 0));
@@ -16,10 +19,14 @@ const copyPallets = pallets => pallets.map(pieces => pieces.map(piece => ({ ...p
 function startingPallets(values) {
   return values.map((value, origin) => Array.from({ length: value }, (_, ring) => ({ id: `${origin}-${ring}`, root: `${origin}-${ring}`, origin, family: startingFamily(origin, ring), halves: 2 })));
 }
-export function createState(key = 'whole') {
+export function createState(key = 'whole', values = null) {
   const shipment = SHIPMENTS[key];
   if (!shipment) throw new Error('Unknown shipment.');
-  return { key, originals: [...shipment.values], pallets: startingPallets(shipment.values), stage: 'prediction', prediction: null, pending: null, history: [], explanation: '', hintUsed: false };
+  const originals = values ? [...values] : [...shipment.values];
+  if (originals.length < 1 || originals.length > 6 || originals.some(value => !Number.isInteger(value) || value < 0)) throw new Error('Choose one to six pallets with whole starting gear quantities.');
+  const quantity = originals.reduce((sum, value) => sum + value, 0);
+  if (quantity * 2 % originals.length) throw new Error('Choose a total that can be shared equally in whole or half gears.');
+  return { key, originals, pallets: startingPallets(originals), stage: 'prediction', prediction: null, pending: null, history: [], explanation: '', hintUsed: false };
 }
 export function assertConserved(state) {
   if (state.pallets.length !== state.originals.length) throw new Error('Every original observation needs one pallet.');
@@ -39,7 +46,7 @@ function requireReady(state) {
 }
 function requireSharing(state) {
   requireReady(state);
-  if (state.stage !== 'sharing') throw new Error('Record a prediction before sharing.');
+  if (state.stage !== 'sharing') throw new Error(state.stage === 'prediction' ? 'Record a prediction before sharing.' : 'Gear movement is paused while you complete this step.');
 }
 function requirePallet(state, index) {
   if (!Number.isInteger(index) || !state.pallets[index]) throw new Error('Choose a labeled pallet.');
@@ -75,13 +82,45 @@ export function move(state, source, destination) {
 }
 export function split(state, source) {
   requireSharing(state); requirePallet(state, source);
-  if (!SHIPMENTS[state.key].halves) throw new Error('This shipment uses whole rings.');
   const top = state.pallets[source].at(-1);
-  if (!top || top.halves !== 2) throw new Error('Choose a whole top ring to split into halves.');
+  if (!top || top.halves !== 2) throw new Error('Choose a whole top gear to split into halves.');
   const pallets = copyPallets(state.pallets);
   pallets[source].pop();
   pallets[source].push({ ...top, id: `${top.id}-a`, halves: 1 }, { ...top, id: `${top.id}-b`, halves: 1 });
   return changed(state, pallets, { type: 'split', source, pieceId: top.id, children: [`${top.id}-a`, `${top.id}-b`] });
+}
+export function compatibleTopHalves(state, source) {
+  const pieces = state.pallets[source];
+  const lower = pieces?.at(-2), upper = pieces?.at(-1);
+  return lower && upper && lower.halves === 1 && upper.halves === 1 &&
+    lower.root === upper.root && lower.origin === upper.origin && lower.family === upper.family
+    ? [lower, upper] : null;
+}
+export function merge(state, source) {
+  requireSharing(state); requirePallet(state, source);
+  const pair = compatibleTopHalves(state, source);
+  if (!pair) throw new Error('Place the two matching halves together at the top of the same pallet to merge them.');
+  const pallets = copyPallets(state.pallets);
+  const whole = { ...pair[0], id: pair[0].root, halves: 2 };
+  pallets[source].splice(-2, 2, whole);
+  return changed(state, pallets, { type: 'merge', source, pieceId: pair[0].id, children: pair.map(piece => piece.id), mergedId: whole.id });
+}
+// Only exposed top pieces qualify. Never search other pallets for a partner.
+export function pieceAction(state, pieceId) {
+  if (state.stage !== 'sharing' || state.pending) return null;
+  for (let source = 0; source < state.pallets.length; source++) {
+    const top = state.pallets[source].at(-1);
+    if (top?.id === pieceId && top.halves === 2) return { type: 'split', source, pieceIds: [pieceId] };
+    const pair = compatibleTopHalves(state, source);
+    if (pair?.some(piece => piece.id === pieceId)) return { type: 'merge', source, pieceIds: pair.map(piece => piece.id) };
+  }
+  return null;
+}
+export function actOnPiece(state, pieceId) {
+  requireSharing(state);
+  const action = pieceAction(state, pieceId);
+  if (!action) throw new Error('Choose a whole top gear or either of the highlighted matching top halves.');
+  return action.type === 'split' ? split(state, action.source) : merge(state, action.source);
 }
 export function settle(state) { return { ...state, pending: null }; }
 export function undo(state) {
@@ -91,9 +130,9 @@ export function undo(state) {
 }
 export function reset(state) {
   requireReady(state);
-  return { ...createState(state.key), prediction: state.prediction, stage: state.prediction === null ? 'prediction' : 'sharing', hintUsed: state.hintUsed };
+  return { ...createState(state.key, state.originals), prediction: state.prediction, stage: state.prediction === null ? 'prediction' : 'sharing', hintUsed: state.hintUsed };
 }
-export function replay(state) { requireReady(state); return createState(state.key); }
+export function replay(state) { requireReady(state); return createState(state.key, state.originals); }
 export function dispatch(state) {
   requireSharing(state); assertConserved(state);
   const current = loads(state);
@@ -101,16 +140,19 @@ export function dispatch(state) {
   return { success, state: success ? { ...state, stage: 'calculation' } : state,
     message: success ? 'Equal shares! All original cargo is accounted for. Now connect the model to a calculation.' : `The current loads are ${current.map(formatQuantity).join(', ')}. Compare the largest and smallest loads and keep sharing.` };
 }
+export function calculationRequirement(state, answers) {
+  const expectedTotal = total(state) / 2;
+  const count = state.originals.length;
+  if (numericAnswer(answers.total) !== expectedTotal) return { field: 'total', message: 'Recheck the total gears: add every value in Original Shipment. Two halves count as one gear.' };
+  if (numericAnswer(answers.count) !== count) return { field: 'count', message: 'Count the labeled pallets, not the gears or half-gears. Each original pallet counts once, even if it is empty.' };
+  if (numericAnswer(answers.mean) !== expectedTotal / count) return { field: 'mean', message: 'Divide the total gears by the number of pallets. Keep any half-gear.' };
+  return null;
+}
 export function checkCalculation(state, answers) {
   requireReady(state);
   if (state.stage !== 'calculation') throw new Error('Dispatch equal loads before calculating.');
-  const expectedTotal = total(state) / 2;
-  const count = state.originals.length;
-  let message = '';
-  if (numericAnswer(answers.total) !== expectedTotal) message = 'Recheck the total: add every value in Original Shipment.';
-  else if (numericAnswer(answers.count) !== count) message = 'Count the original observations: one labeled pallet per observation. Rings and half-layers are units of quantity.';
-  else if (numericAnswer(answers.mean) !== expectedTotal / count) message = 'Divide the total by the number of original observations. Keep any half-unit.';
-  return { success: !message, message: message || 'Your total, observation count, and mean all agree with the equal shares.', state: message ? state : { ...state, stage: 'explanation' } };
+  const requirement = calculationRequirement(state, answers);
+  return { success: !requirement, field: requirement?.field, message: requirement?.message || 'Your total gears, pallet count, and mean all agree with the equal shares.', state: requirement ? state : { ...state, stage: 'explanation' } };
 }
 export function explain(state, explanation) {
   if (state.stage !== 'explanation') throw new Error('Check the calculation first.');

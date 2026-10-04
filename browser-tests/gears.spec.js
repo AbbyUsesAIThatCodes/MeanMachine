@@ -83,7 +83,7 @@ test('half dragging keeps exact values, identity, undo and the calculation/expla
   await page.locator('#undo').press('Enter');await expect(page.locator('.load .value')).toHaveText(['3','4']);
   await page.locator('#move').press('Enter');await page.locator('#dispatch').press('Enter');
   await page.locator('#total').fill('7');await page.locator('#count').fill('8');await page.locator('#mean').fill('3.5');await page.getByRole('button',{name:'Check Calculation'}).click();
-  await expect(page.getByRole('status')).toContainText('observations');
+  await expect(page.getByRole('status')).toContainText('pallets');
   await page.locator('#count').fill('2');await page.getByRole('button',{name:'Check Calculation'}).click();
   await page.locator('#explanation').fill('Seven units shared between two original observations gives three and a half each. Color and shape do not change the quantity.');
   await page.getByRole('button',{name:'Finish Shipment'}).click();await expect(page.getByRole('heading',{name:'Shipment Complete'})).toBeVisible();

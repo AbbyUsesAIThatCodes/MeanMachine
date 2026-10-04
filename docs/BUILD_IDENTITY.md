@@ -25,7 +25,7 @@
 
 ## Commands And Verification
 
-Use Node 22.12+ (verified locally with Node 24) and pnpm. `pnpm install`, `pnpm test`, `pnpm dev`, `pnpm build` are the supported entrypoints. Vite's direct CLI build is not a supported artifact entrypoint because it would bypass identity injection. `pnpm dev` binds only `127.0.0.1:4174`.
+Use Node 22.12+ (the focused review uses Node 22.23.3) and the pinned existing dependencies. `npm test`, `npm run dev`, and `npm run build` invoke the supported package scripts; pnpm equivalents remain valid. No installation is required or authorized for this focused review. Vite's direct CLI build is not supported because it bypasses identity injection. Development binds only `127.0.0.1:4174`; `MEAN_DEV_PORT` selects another local port. `MEAN_PREVIEW_PORT` similarly overrides preview port 4175.
 
 Every artifact-producing build consumes an ordinal. Reservations are retained on failures; gaps are expected. A filesystem lock serializes allocation. Never delete `.build/ledger.jsonl` to reset a counter. The directory is local durable state and intentionally not committed; another checkout must use its own explicit local session scope or share the ledger. Public PR allocation is not implemented yet.
 
@@ -35,4 +35,10 @@ Generated manifests, current reports and build artifacts are ignored to avoid a 
 
 ## Abigail Mechanics Checkpoint
 
-The source review at port 18882 is explicitly **Live Development**, independent of the preserved Build006 at port 18881. An external QA harness calls `reserveBuild('development')` and uses existing Vite 8.3.1/Playwright 1.63.0 installations with the exact runtime Three.js 0.186.1. This does not claim a production build with the pinned Vite 7.1.7/Playwright 1.55.1/JSZip 3.10.1 toolchain. Restoring those project dependencies was rejected by automatic approval review because of the retained no-install constraint. Packaging and production/offline verification remain pending. See [Gear Review](GEAR-REVIEW.md).
+The following paragraph records the historical October 3 checkpoint. Pinned dependencies and portable Build004 were subsequently verified. Current local work is described in [Focused Local Review](FOCUSED-REVIEW.md).
+
+The source review at port 18882 is explicitly **Live Development**, independent of preserved Build006 at port 18881. At that checkpoint an external harness used existing Vite 8.3.1/Playwright 1.63.0 with Three.js 0.186.1. Dependency restoration was blocked by approval review, so production/offline checks were then pending. See [Gear Review](GEAR-REVIEW.md).
+
+## Focused Review Continuation
+
+The isolated `MeanMachine-next-review` checkout carries forward reservations 001–004 and is the sole continuation allocator for this local scope. Its `.build/ledger.jsonl` also retains every subsequent development and production reservation. Preserve the earlier source and packaging ledgers; do not allocate from those older copies or reset counters. Version `0.1.0`, codename **Foam Rings**, and the existing local scope remain appropriate; the ordinal, UTC time, source revision and fingerprint identify each new build. Current generated identity is in `.build/latest.json` and `.build/CURRENT_BUILD.md`.

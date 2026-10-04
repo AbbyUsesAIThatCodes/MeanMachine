@@ -6,14 +6,15 @@ import { createLabel, disposeTree } from './shared/primitives.js';
 import { PALETTE } from './shared/palette.js';
 import { EXTERIOR_POSE, INTRO_DURATION_MS, sampleIntro } from './shared/camera.js';
 import { stackLayout } from './piece-layout.js';
-import { ORIGINS, loads, formatQuantity } from './math-state.js';
+import { ORIGINS, loads, formatQuantity, pieceAction } from './math-state.js';
+import { palletLayout } from './pallet-layout.js';
 
 const letter = index => String.fromCharCode(65 + index);
 const smooth = t => t * t * (3 - 2 * t);
-export function createPresentation(container, onPalletClick, { onArrive, onStatus, onTransfer, onDragActive } = {}) {
+export function createPresentation(container, onPalletClick, { onArrive, onStatus, onTransfer, onDragActive, onPieceAction, onHint, onBlocked } = {}) {
   let renderer;
   try { renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false }); }
-  catch { queueMicrotask(() => { onArrive?.(); onStatus?.('The 3D view is unavailable. All sharing controls remain available.'); }); return { sync() {}, async animate() {}, startIntro() {}, skipIntro() {}, setReducedMotion() {}, setView() {} }; }
+  catch { queueMicrotask(() => { onArrive?.(); onStatus?.('The 3D view is unavailable. All sharing controls remain available.'); }); return { sync() {}, async animate() {}, startIntro() {}, skipIntro() {}, setReducedMotion() {}, setView() {}, previewAction() {} }; }
   renderer.setPixelRatio(Math.min(devicePixelRatio, 1.75));
   renderer.setSize(innerWidth, innerHeight);
   renderer.shadowMap.enabled = true;
@@ -38,13 +39,22 @@ export function createPresentation(container, onPalletClick, { onArrive, onStatu
   let phase = 'exterior', introStarted = null, reducedMotion = false, contextLost = false, activeMotion = null, view = 'overview';
   let teachingPose;
   let gesture = null, hovered = null, dropTarget = null, suppressClick = false;
-  const glow = new THREE.Mesh(new THREE.BufferGeometry(), new THREE.MeshBasicMaterial({ color: 0xfff3bd, transparent: true, opacity: 0.34, depthWrite: false, side: THREE.DoubleSide }));
-  glow.visible = false; glow.renderOrder = 4; scene.add(glow);
+  let press = null, completedPress = null, pendingClick = null, hoverAction = null, hoverKey = '';
+  const glows = Array.from({ length: 2 }, () => {
+    const glow = new THREE.Mesh(new THREE.BufferGeometry(), new THREE.MeshBasicMaterial({ color: 0xffe598, transparent: true, opacity: 0.34, depthWrite: false, side: THREE.DoubleSide }));
+    glow.visible = false; glow.renderOrder = 4; scene.add(glow); return glow;
+  });
   renderer.domElement.style.touchAction = 'none';
   const floorY = 0.14;
   const rowZ = -7.1;
   const spacing = 2.7;
-  const palletPosition = index => new THREE.Vector3(-14 + (index - (state.pallets.length - 1) / 2) * spacing, floorY, rowZ);
+  const palletPosition = index => { const p = palletLayout(state.pallets.length)[index]; return new THREE.Vector3(p.x, p.y, p.z); };
+  function teachingArea() {
+    const left = document.querySelector('.shipment')?.getBoundingClientRect().right || 254;
+    const right = document.querySelector('.activity')?.getBoundingClientRect().left || innerWidth - 336;
+    const bottom = document.querySelector('#loads')?.getBoundingClientRect().top || innerHeight - 245;
+    return { left: left + 18, right: right - 18, top: 167, bottom: Math.max(407, bottom - 18) };
+  }
 
   function applyPose(pose) {
     camera.position.fromArray(pose.position); target.fromArray(pose.target);
@@ -53,6 +63,24 @@ export function createPresentation(container, onPalletClick, { onArrive, onStatu
     camera.updateMatrixWorld();
   }
   function fitTeachingView() {
+    if (state?.pallets.length > 3) {
+      const positions = palletLayout(state.pallets.length), area = teachingArea();
+      const min = new THREE.Vector3(Math.min(...positions.map(p => p.x)) - 1.4, floorY, Math.min(...positions.map(p => p.z)) - 1.2);
+      const max = new THREE.Vector3(Math.max(...positions.map(p => p.x)) + 1.4, floorY + 0.29 + Math.max(...loads(state)) * RING_THICKNESS / 2 + 0.25, Math.max(...positions.map(p => p.z)) + 1.8);
+      const center = min.clone().add(max).multiplyScalar(0.5);
+      const direction = new THREE.Vector3(0, view === 'front' ? 0.62 : 0.72, view === 'front' ? 0.78 : 0.69).normalize();
+      const right = new THREE.Vector3(1, 0, 0), up = new THREE.Vector3().crossVectors(direction, right);
+      const tanY = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+      const fitX = tanY * camera.aspect * Math.max(280, area.right - area.left) / innerWidth;
+      const fitY = tanY * Math.max(220, area.bottom - area.top) / innerHeight;
+      let distance = 0;
+      for (const x of [min.x, max.x]) for (const y of [min.y, max.y]) for (const z of [min.z, max.z]) {
+        const relative = new THREE.Vector3(x, y, z).sub(center), towardCamera = relative.dot(direction);
+        distance = Math.max(distance, Math.abs(relative.dot(right)) / fitX + towardCamera, Math.abs(relative.dot(up)) / fitY + towardCamera);
+      }
+      teachingPose = { position: center.clone().addScaledVector(direction, distance * 1.04).toArray(), target: center.toArray(), roll: 0 };
+      return;
+    }
     const left = document.querySelector('.shipment')?.getBoundingClientRect().right || (innerWidth <= 1050 ? 206 : 254);
     const right = document.querySelector('.activity')?.getBoundingClientRect().left || innerWidth - (innerWidth <= 1050 ? 292 : 336);
     const available = Math.max(360, right - left - 28);
@@ -62,6 +90,11 @@ export function createPresentation(container, onPalletClick, { onArrive, onStatu
     teachingPose = { position: view === 'front' ? [-14, 1.2 + distance * 0.6, rowZ + distance] : [-14 + distance * 0.22, 1.2 + distance * 0.57, rowZ + distance * 0.91], target: center, roll: 0 };
   }
   function fitOverlay(amount = 1) {
+    if (state?.pallets.length > 3) {
+      const area = teachingArea();
+      camera.setViewOffset(innerWidth, innerHeight, (innerWidth / 2 - (area.left + area.right) / 2) * amount, (innerHeight / 2 - (area.top + area.bottom) / 2) * amount, innerWidth, innerHeight);
+      camera.updateProjectionMatrix(); return;
+    }
     const left = document.querySelector('.shipment')?.getBoundingClientRect().right || (innerWidth <= 1050 ? 206 : 254);
     const right = document.querySelector('.activity')?.getBoundingClientRect().left || innerWidth - (innerWidth <= 1050 ? 292 : 336);
     camera.setViewOffset(innerWidth, innerHeight, (innerWidth / 2 - (left + right) / 2) * amount, 50 * amount, innerWidth, innerHeight);
@@ -80,7 +113,11 @@ export function createPresentation(container, onPalletClick, { onArrive, onStatu
       // Move only the generated display board forward, so it cannot mask the
       // lowest rings. Frozen source geometry and the pallet footprint stay intact.
       const board = pallet.children.find(child => child.isMesh && child.position.z === 0.99 && child.position.y === 0.62);
-      if (board) { board.position.z += 0.4; board.position.y = 0.35; board.scale.y = 0.75; }
+      if (board) {
+        board.position.z += 0.4; board.position.y = state.pallets.length > 3 ? 0.48 : 0.35;
+        board.scale.y = state.pallets.length > 3 ? 0.9 : 0.75;
+        if (state.pallets.length > 3) { board.scale.x = 1.22; board.rotation.x = -Math.PI / 4; }
+      }
       pallet.userData.palletIndex = index; pallet.position.copy(palletPosition(index));
       cargo.add(pallet); pallets.push(pallet);
       const halo = new THREE.Mesh(new THREE.RingGeometry(1.19, 1.29, 64), new THREE.MeshBasicMaterial({ color: 0x547c7f, transparent: true, opacity: 0.5, side: THREE.DoubleSide }));
@@ -104,7 +141,11 @@ export function createPresentation(container, onPalletClick, { onArrive, onStatu
     loads(next).forEach((quantity, index) => {
       if (pallets[index].userData.halfUnits === quantity) return;
       const old = pallets[index].getObjectByName('Quantity Tag'); if (old) disposeObject(old);
-      const tag = createLabel(pallets[index], formatQuantity(quantity), 1.29, 0.6225, [0, 0.35, 1.442], { subtitle: `Pallet ${letter(index)} • Current Load` });
+      const large = next.pallets.length > 3;
+      const tag = large
+        ? createLabel(pallets[index], `${letter(index)}: ${formatQuantity(quantity)}`, 1.55, 0.747, [0, 0.517, 1.427])
+        : createLabel(pallets[index], formatQuantity(quantity), 1.29, 0.6225, [0, 0.35, 1.442], { subtitle: `Pallet ${letter(index)} • Current Load` });
+      if (large) tag.rotation.x = -Math.PI / 4;
       tag.name = 'Quantity Tag'; pallets[index].userData.halfUnits = quantity;
       pallets[index].userData.quantity = quantity / 2;
     });
@@ -119,13 +160,16 @@ export function createPresentation(container, onPalletClick, { onArrive, onStatu
       object.userData.palletIndex = placement.pallet;
     }
     updateLabels(next); lastPallets = next.pallets;
+    if (next.pallets.length > 3 && phase === 'teaching') { fitTeachingView(); applyPose(teachingPose); fitOverlay(); }
   }
   function sync(next, selected) {
+    if (state && (next.pending || next.stage !== state.stage || next.pallets !== state.pallets)) clearClickIntent();
     if (gesture && (next.pending || next.stage !== 'sharing' || next.key !== state?.key || next.pallets[gesture.source]?.at(-1)?.id !== gesture.pieceId)) cancelDrag('Pickup canceled.');
     state = next;
     if (next.pending || next.stage !== 'sharing') showHover(null);
-    if (currentKey !== next.key) {
-      currentKey = next.key; createPallets(); lastPallets = null;
+    const layoutKey = `${next.key}:${next.originals.join(',')}`;
+    if (currentKey !== layoutKey) {
+      currentKey = layoutKey; createPallets(); lastPallets = null;
       if (phase === 'teaching') { fitTeachingView(); applyPose(teachingPose); fitOverlay(); }
     }
     if (!next.pending && next.pallets !== lastPallets) arrange(next);
@@ -170,7 +214,8 @@ export function createPresentation(container, onPalletClick, { onArrive, onStatu
     if (!moving) { arrange(next); render(); return; }
     const start = moving.position.clone();
     const children = [];
-    const duration = pending.type === 'split' ? 1150 : 520;
+    const duration = pending.type === 'split' ? 1150 : pending.type === 'merge' ? 750 : 520;
+    const mergeParts = pending.type === 'merge' ? pending.children.map(id => ({ object: ringObjects.get(id), start: ringObjects.get(id).position.clone() })) : [];
     await new Promise(resolve => {
       const started = performance.now();
       let finished = false;
@@ -186,6 +231,23 @@ export function createPresentation(container, onPalletClick, { onArrive, onStatu
           moving.position.y += Math.sin(Math.PI * t) * 1.1;
           squash(moving, t < 0.72 ? 1 + 0.2 * Math.sin(Math.PI * t / 0.72) : 1 - 0.24 * Math.sin((t - 0.72) / 0.28 * Math.PI));
           moving.rotation.z = Math.sin(Math.PI * t) * 0.16 * Math.sign(layout.get(pending.pieceId).position.x - start.x || 1);
+        } else if (pending.type === 'merge') {
+          if (t < 0.65) {
+            const p = t / 0.65;
+            mergeParts.forEach(({ object, start: origin }, index) => {
+              object.position.copy(origin); object.position.y += Math.sin(Math.PI * p) * (index ? 0.5 : 0.15);
+              object.position.x += (index ? 1 : -1) * Math.sin(Math.PI * p) * 0.13;
+              object.rotation.z = (index ? 1 : -1) * Math.sin(Math.PI * p) * 0.05;
+            });
+          } else {
+            if (!children.length) {
+              mergeParts.forEach(({ object }) => { object.visible = false; });
+              children.push(addRing(next.pallets.flat().find(piece => piece.id === pending.mergedId)));
+            }
+            const whole = children[0], p = (t - 0.65) / 0.35;
+            whole.position.copy(layout.get(pending.mergedId).position);
+            squash(whole, 1 - 0.16 * Math.sin(Math.PI * p));
+          }
         } else if (t < 0.2) {
           squash(moving, 1 - 0.3 * Math.sin(t / 0.2 * Math.PI / 2));
         } else {
@@ -213,7 +275,7 @@ export function createPresentation(container, onPalletClick, { onArrive, onStatu
     raycaster.setFromCamera(new THREE.Vector2((event.clientX - rect.left) / rect.width * 2 - 1, 1 - (event.clientY - rect.top) / rect.height * 2), camera);
   }
   function canPick() { return phase === 'teaching' && state?.stage === 'sharing' && !state.pending && !contextLost; }
-  function ringAt(event) {
+  function hitRing(event) {
     aim(event);
     for (const hit of raycaster.intersectObjects([...ringObjects.values()], true)) {
       // Decorative line raycasts have a wide world-unit threshold. They must
@@ -222,10 +284,17 @@ export function createPresentation(container, onPalletClick, { onArrive, onStatu
       let object = hit.object;
       while (object && !object.userData.identity) object = object.parent;
       if (!object) continue;
-      const source = object.userData.palletIndex;
-      return state.pallets[source]?.at(-1)?.id === object.userData.identity ? object : null;
+      return object;
     }
     return null;
+  }
+  function ringAt(event) {
+    const object = hitRing(event);
+    return object && state.pallets[object.userData.palletIndex]?.at(-1)?.id === object.userData.identity ? object : null;
+  }
+  function hoverAt(event) {
+    const object = hitRing(event);
+    return object && (state.pallets[object.userData.palletIndex]?.at(-1)?.id === object.userData.identity || pieceAction(state, object.userData.identity)) ? object : null;
   }
   function palletAt(event, ignoredId = null) {
     if (document.elementFromPoint(event.clientX, event.clientY) !== renderer.domElement) return null;
@@ -240,17 +309,30 @@ export function createPresentation(container, onPalletClick, { onArrive, onStatu
     return null;
   }
   function showHover(object) {
-    if (hovered === object) return;
-    hovered = object;
-    glow.geometry.dispose();
-    if (object) {
-      const body = object.children.find(child => child.isMesh);
-      glow.geometry = body.geometry.clone(); glow.position.copy(object.position);
-      glow.scale.set(1.055, 1.07, 1.055); glow.position.y += 0.006;
-    }
-    glow.visible = Boolean(object);
-    renderer.domElement.style.cursor = gesture?.moved ? 'grabbing' : object ? 'grab' : 'pointer';
+    const action = object ? pieceAction(state, object.userData.identity) : null;
+    const key = object ? `${object.userData.identity}:${action?.type}:${action?.pieceIds.join(',')}` : '';
+    if (hovered === object && hoverKey === key) return;
+    hovered = object; hoverAction = action; hoverKey = key;
+    const affected = action ? action.pieceIds.map(id => ringObjects.get(id)) : object ? [object] : [];
+    glows.forEach((glow, index) => {
+      glow.geometry.dispose(); const targetObject = affected[index];
+      if (targetObject) {
+        glow.geometry = targetObject.children.find(child => child.isMesh).geometry.clone();
+        glow.position.copy(targetObject.position); glow.position.y += 0.006; glow.scale.set(1.055, 1.07, 1.055);
+      }
+      glow.visible = Boolean(targetObject);
+    });
+    onHint?.(action?.type === 'split' ? 'Double-click to split this gear. Drag to move it.' : action?.type === 'merge' ? 'Double-click either highlighted half to merge this top pair.' : object ? 'Drag this half to move it. Merging needs its matching half beside it at the top.' : '');
+    renderer.domElement.style.cursor = gesture?.moved ? 'grabbing' : object ? 'grab' : canPick() ? 'pointer' : 'default';
     render();
+  }
+  function previewAction(type, source) {
+    const object = type && canPick() ? ringObjects.get(state.pallets[source]?.at(-1)?.id) : null;
+    showHover(object && pieceAction(state, object.userData.identity)?.type === type ? object : null);
+  }
+  function clearClickIntent() {
+    if (pendingClick) clearTimeout(pendingClick.timer);
+    pendingClick = null; completedPress = null;
   }
   function showDestination(index) {
     dropTarget = index;
@@ -268,14 +350,19 @@ export function createPresentation(container, onPalletClick, { onArrive, onStatu
     return previous;
   }
   function cancelDrag(message = 'Pickup canceled. The same piece returned to its stack.') {
+    press = null; clearClickIntent();
     if (!gesture) return;
     const moved = gesture.moved; suppressClick = true;
     releaseGesture(); arrange(state); showDestination(null); render();
     if (moved) onStatus?.(message);
   }
   renderer.domElement.addEventListener('pointerdown', event => {
-    if (!event.isPrimary || event.button !== 0 || !canPick() || gesture) return;
+    if (!event.isPrimary || event.button !== 0 || gesture) return;
+    if (!canPick()) { clearClickIntent(); if (phase === 'teaching' && !state?.pending) { event.preventDefault(); onBlocked?.(); } return; }
     suppressClick = false;
+    completedPress = null;
+    const hitObject = hitRing(event);
+    press = { pointerId: event.pointerId, x: event.clientX, y: event.clientY, pieceId: hitObject?.userData.identity || null, moved: false };
     const object = ringAt(event); if (!object) return;
     const normal = camera.getWorldDirection(new THREE.Vector3());
     const plane = new THREE.Plane().setFromNormalAndCoplanarPoint(normal, object.position);
@@ -284,6 +371,9 @@ export function createPresentation(container, onPalletClick, { onArrive, onStatu
     renderer.domElement.setPointerCapture(event.pointerId);
   });
   renderer.domElement.addEventListener('pointermove', event => {
+    if (press && press.pointerId === event.pointerId && Math.hypot(event.clientX - press.x, event.clientY - press.y) >= 5) {
+      press.moved = true; suppressClick = true; clearClickIntent();
+    }
     if (gesture) {
       if (event.pointerId !== gesture.pointerId) return;
       if (!gesture.moved && Math.hypot(event.clientX - gesture.x, event.clientY - gesture.y) < 5) return;
@@ -294,33 +384,59 @@ export function createPresentation(container, onPalletClick, { onArrive, onStatu
       const destination = palletAt(event, gesture.pieceId);
       showDestination(destination === gesture.source ? null : destination);
       renderer.domElement.style.cursor = 'grabbing'; event.preventDefault(); render();
-    } else if (canPick()) showHover(ringAt(event)); else showHover(null);
+    } else if (canPick()) showHover(hoverAt(event)); else showHover(null);
   });
   renderer.domElement.addEventListener('pointerup', event => {
+    if (press?.pointerId === event.pointerId) { completedPress = press; press = null; }
     if (!gesture || gesture.pointerId !== event.pointerId) return;
     if (!gesture.moved) { releaseGesture(); return; }
     const destination = palletAt(event, gesture.pieceId);
     if (destination === null || destination === gesture.source) { cancelDrag('Drop canceled. Choose a different pallet; no cargo changed.'); return; }
-    const completed = releaseGesture(); suppressClick = true;
+    const completed = releaseGesture(); suppressClick = true; clearClickIntent();
     try {
       if (!onTransfer?.(completed.source, destination)) { arrange(state); showDestination(null); render(); }
     } catch { arrange(state); showDestination(null); render(); onStatus?.('Drop canceled. Your cargo is unchanged.'); }
   });
   renderer.domElement.addEventListener('pointercancel', () => cancelDrag());
-  renderer.domElement.addEventListener('lostpointercapture', () => cancelDrag());
+  renderer.domElement.addEventListener('lostpointercapture', () => { if (gesture || press) cancelDrag(); });
   renderer.domElement.addEventListener('pointerleave', () => { if (!gesture) showHover(null); });
-  window.addEventListener('blur', () => cancelDrag());
-  document.addEventListener('keydown', event => { if (event.key === 'Escape' && gesture) { event.preventDefault(); cancelDrag(); } });
-  renderer.domElement.addEventListener('click', event => {
-    if (suppressClick) { suppressClick = false; return; }
-    if (phase !== 'teaching' || state?.stage !== 'sharing' || state.pending) return;
-    raycaster.setFromCamera(new THREE.Vector2(event.clientX / innerWidth * 2 - 1, 1 - event.clientY / innerHeight * 2), camera);
-    for (const hit of raycaster.intersectObjects([...pallets, ...ringObjects.values()], true)) {
-      let object = hit.object;
-      while (object && object.userData.palletIndex === undefined) object = object.parent;
-      if (object) { onPalletClick(object.userData.palletIndex); break; }
-    }
+  window.addEventListener('blur', () => { cancelDrag(); showHover(null); activeMotion?.finish(); });
+  document.addEventListener('pointerdown', event => { if (event.target !== renderer.domElement) clearClickIntent(); });
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && (gesture || press || pendingClick)) { event.preventDefault(); cancelDrag(); showHover(null); }
+    else if (event.target !== renderer.domElement) clearClickIntent();
   });
+  renderer.domElement.addEventListener('click', event => {
+    const completed = completedPress; completedPress = null;
+    if (suppressClick) { suppressClick = false; clearClickIntent(); return; }
+    if (!canPick() || !completed || completed.moved) { clearClickIntent(); return; }
+    const object = hitRing(event), pieceId = object?.userData.identity || null;
+    if (pieceId !== completed.pieceId) { clearClickIntent(); return; }
+    const source = palletAt(event); if (source === null) return;
+    const action = pieceId ? pieceAction(state, pieceId) : null;
+    const key = action ? `${action.type}:${action.source}:${action.pieceIds.join(',')}` : pieceId;
+    if (event.detail === 2) {
+      const first = pendingClick;
+      const matches = first && first.key === key && first.pallets === state.pallets;
+      clearClickIntent(); event.preventDefault();
+      if (matches && action) onPieceAction?.(pieceId);
+      else if (pieceId) onStatus?.('Split a whole top gear, or merge its matching halves together at the top of one pallet.');
+      return;
+    }
+    clearClickIntent();
+    // Triple/repeated clicks, and a click after dragging, cannot become a new
+    // transform. A transform requires two clean presses on the same preview.
+    if (event.detail !== 1) return;
+    if (!pieceId) { onPalletClick(source); return; }
+    const candidate = { key, source, pallets: state.pallets, timer: null };
+    candidate.timer = setTimeout(() => {
+      if (pendingClick !== candidate) return;
+      pendingClick = null;
+      if (canPick() && state.pallets === candidate.pallets) onPalletClick(candidate.source);
+    }, 500);
+    pendingClick = candidate;
+  });
+  renderer.domElement.addEventListener('dblclick', event => event.preventDefault());
   window.addEventListener('resize', () => {
     cancelDrag(); showHover(null);
     camera.aspect = innerWidth / innerHeight; camera.clearViewOffset(); camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight);
@@ -333,13 +449,14 @@ export function createPresentation(container, onPalletClick, { onArrive, onStatu
   // Read-only scene evidence for browser QA; no game-state mutations are exposed.
   window.__meanScene = Object.freeze({ snapshot() {
     return { phase, camera: { position: camera.position.toArray(), target: target.toArray(), fov: camera.fov, view: camera.view ? { ...camera.view } : null }, shellVisible: world.factoryShell.visible, contextLost,
-      interaction: { held: gesture?.moved ? gesture.pieceId : null, hovered: hovered?.userData.identity || null, destination: dropTarget },
+      stage: state.stage, pending: state.pending ? { ...state.pending } : null, originals: [...state.originals],
+      interaction: { held: gesture?.moved ? gesture.pieceId : null, hovered: hovered?.userData.identity || null, destination: dropTarget, actionPreview: hoverAction ? { ...hoverAction } : null, pendingSingleClick: Boolean(pendingClick) },
       pallets: pallets.map(p => ({ id: p.userData.id, quantity: p.userData.quantity, position: p.position.toArray() })),
       rings: [...ringObjects.values()].filter(o => o.visible).map(o => ({ ...o.userData, position: o.position.toArray(), scale: o.scale.toArray(), rotation: [o.rotation.x, o.rotation.y, o.rotation.z] })),
       ringSurfacePoints: [...ringObjects.values()].map(object => { const projected = object.position.clone().add(new THREE.Vector3(0, RING_THICKNESS * object.userData.fraction / 2, 0.7)).project(camera); return { identity: object.userData.identity, x: (projected.x + 1) * innerWidth / 2, y: (1 - projected.y) * innerHeight / 2 }; }),
       topPickPoints: state.pallets.map(pieces => { const object = ringObjects.get(pieces.at(-1)?.id); if (!object) return null; const projected = object.position.clone().add(new THREE.Vector3(0, RING_THICKNESS * object.userData.fraction, 0.45)).project(camera); return { x: (projected.x + 1) * innerWidth / 2, y: (1 - projected.y) * innerHeight / 2, identity: object.userData.identity }; }),
-      pickPoints: pallets.map(p => { const projected = p.position.clone().add(new THREE.Vector3(0, 1.1, 0)).project(camera); return { x: (projected.x + 1) * innerWidth / 2, y: (1 - projected.y) * innerHeight / 2 }; }) };
+      pickPoints: pallets.map(p => { const projected = p.position.clone().add(state.pallets.length > 3 ? new THREE.Vector3(0, 0.35, 1.442) : new THREE.Vector3(0, 1.1, 0)).project(camera); return { x: (projected.x + 1) * innerWidth / 2, y: (1 - projected.y) * innerHeight / 2 }; }) };
   } });
   applyPose(EXTERIOR_POSE); container.dataset.phase = phase; render();
-  return { sync, animate, startIntro, skipIntro: arrive, setReducedMotion, setView };
+  return { sync, animate, startIntro, skipIntro: arrive, setReducedMotion, setView, previewAction };
 }
