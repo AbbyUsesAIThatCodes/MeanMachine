@@ -6,7 +6,7 @@ A local 3D classroom game for exploring the arithmetic mean by sharing colorful 
 
 ## Run The Local Prototype
 
-Six pallets retain the original Overview/Front View angles and controls with the owner's approved fixed wider framing. Cargo moves, splits, merges, undo and reset do not refit the camera. See [Clockwise Particles And Stable Camera Review](docs/CLOCKWISE-CAMERA-REVIEW.md).
+Six pallets retain the original Overview/Front View angles and controls with closer fixed framing. Cargo moves, splits, merges, undo and reset do not refit the camera. Dragged gears stay level above the floor until their stack landing. The accepted clockwise arrows complete a circuit every 1.6 seconds. See [Tighter Framing And Level Drag Review](docs/TIGHTER-FRAMING-LEVEL-DRAG-REVIEW.md).
 
 Use Node 22.12+ and the pinned dependencies already present in this review checkout. Run `npm test`, then `npm run dev` and open `http://127.0.0.1:4174` (or set `MEAN_DEV_PORT`). These invoke the same package scripts as pnpm. No dependency or browser installation is part of this review. The two invented shipments remain **2, 4, 9** and **2, 5**. Record a prediction, share equally, dispatch, calculate, and explain.
 

@@ -1,5 +1,7 @@
 # Clockwise Particles And Stable Camera Review
 
+This records preserved Build015. Its owner's follow-up is implemented separately in [Tighter Framing And Level Drag Review](TIGHTER-FRAMING-LEVEL-DRAG-REVIEW.md), with closer framing, level dragging and a 1.6-second arrow circuit.
+
 The owner approved fixed wider six-pallet framing after reviewing the exact-camera clipping issue. This local correction preserves accepted Build011 and the earlier Build008/004 checkouts and artifacts. No installation, publication, unrelated layout changes, or new owner-facing window is included.
 
 ## Implemented Correction

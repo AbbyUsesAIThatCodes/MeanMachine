@@ -77,9 +77,9 @@ h2 { font-size: 21px; margin: 8px 0 12px; line-height: 1.15; }
 .answer-particle svg { display: block; overflow: visible; filter: drop-shadow(0 0 3px #f3c54a99); }
 .answer-particle path { fill: #ffe079; stroke: #bf8910; stroke-width: 1.2; stroke-linejoin: round; }
 .answer-particle.is-translucent path { fill-opacity: .3; }
-.answer-field.is-current.needs-attention .answer-particle { animation: answer-orbit 8s linear infinite; }
-.answer-field.is-current.needs-attention .answer-particle:nth-child(2) { animation-delay: -.18s; }
-.answer-field.is-current.needs-attention .answer-particle:nth-child(3) { animation-delay: -.36s; }
+.answer-field.is-current.needs-attention .answer-particle { animation: answer-orbit 1.6s linear infinite; }
+.answer-field.is-current.needs-attention .answer-particle:nth-child(2) { animation-delay: -.036s; }
+.answer-field.is-current.needs-attention .answer-particle:nth-child(3) { animation-delay: -.072s; }
 .answer-field.is-current.needs-attention > input, .answer-field.is-current.needs-attention > textarea { animation: answer-glow 4s ease-in-out infinite; }
 .answer-ready { display: none; position: absolute; right: 8px; top: -9px; background: #fffdf4; color: #28673e; padding: 0 4px; font-size: 10px; font-weight: bold; pointer-events: none; }
 .answer-field.is-ready > .answer-ready { display: inline; }

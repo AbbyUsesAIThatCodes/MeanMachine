@@ -8,6 +8,7 @@ import { EXTERIOR_POSE, INTRO_DURATION_MS, sampleIntro } from './shared/camera.j
 import { stackLayout } from './piece-layout.js';
 import { ORIGINS, loads, formatQuantity, pieceAction } from './math-state.js';
 import { palletLayout } from './pallet-layout.js';
+import { createLevelDrag, projectLevelDrag } from './drag-plane.js';
 
 const letter = index => String.fromCharCode(65 + index);
 const smooth = t => t * t * (3 - 2 * t);
@@ -66,8 +67,9 @@ export function createPresentation(container, onPalletClick, { onArrive, onStatu
     if (state?.pallets.length > 3) {
       const positions = palletLayout(state.pallets.length), area = fittedArea ||= teachingArea();
       // Fit once from immutable shipment quantities, never the current stacks.
-      // Six pallets reserve enough height even if all cargo reaches one pallet.
-      const height = state.pallets.length === 6 ? state.originals.reduce((sum, value) => sum + value, 0) : Math.max(...state.originals);
+      // Keep the normal shipment prominent, with one extra gear of headroom.
+      // Reserving all 18 gears on every pallet made the six-pallet view too distant.
+      const height = Math.max(...state.originals) + (state.pallets.length === 6 ? 1 : 0);
       const min = new THREE.Vector3(Math.min(...positions.map(p => p.x)) - 1.4, floorY, Math.min(...positions.map(p => p.z)) - 1.2);
       const max = new THREE.Vector3(Math.max(...positions.map(p => p.x)) + 1.4, floorY + 0.29 + height * RING_THICKNESS + 0.25, Math.max(...positions.map(p => p.z)) + 1.8);
       const center = min.clone().add(max).multiplyScalar(0.5);
@@ -369,10 +371,9 @@ export function createPresentation(container, onPalletClick, { onArrive, onStatu
     const hitObject = hitRing(event);
     press = { pointerId: event.pointerId, x: event.clientX, y: event.clientY, pieceId: hitObject?.userData.identity || null, moved: false };
     const object = ringAt(event); if (!object) return;
-    const normal = camera.getWorldDirection(new THREE.Vector3());
-    const plane = new THREE.Plane().setFromNormalAndCoplanarPoint(normal, object.position);
-    const hit = raycaster.ray.intersectPlane(plane, new THREE.Vector3()); if (!hit) return;
-    gesture = { pointerId: event.pointerId, source: object.userData.palletIndex, pieceId: object.userData.identity, object, x: event.clientX, y: event.clientY, plane, offset: object.position.clone().sub(hit), moved: false };
+    const height = Math.max(floorY + 0.29, ...[...ringObjects.values()].map(ring => ring.position.y + RING_THICKNESS * ring.userData.fraction)) + 0.18;
+    const drag = createLevelDrag(raycaster.ray, object.position, height); if (!drag) return;
+    gesture = { pointerId: event.pointerId, source: object.userData.palletIndex, pieceId: object.userData.identity, object, x: event.clientX, y: event.clientY, drag, moved: false };
     renderer.domElement.setPointerCapture(event.pointerId);
   });
   renderer.domElement.addEventListener('pointermove', event => {
@@ -384,8 +385,8 @@ export function createPresentation(container, onPalletClick, { onArrive, onStatu
       if (!gesture.moved && Math.hypot(event.clientX - gesture.x, event.clientY - gesture.y) < 5) return;
       if (!gesture.moved) { gesture.moved = true; suppressClick = true; showHover(null); onDragActive?.(true); onStatus?.('Gear picked up. Drop on another pallet, or press Escape to cancel.'); }
       aim(event);
-      const hit = raycaster.ray.intersectPlane(gesture.plane, new THREE.Vector3());
-      if (hit) { gesture.object.position.copy(hit.add(gesture.offset)); gesture.object.position.y += reducedMotion ? 0 : 0.16; }
+      const hit = projectLevelDrag(raycaster.ray, gesture.drag);
+      if (hit) gesture.object.position.copy(hit);
       const destination = palletAt(event, gesture.pieceId);
       showDestination(destination === gesture.source ? null : destination);
       renderer.domElement.style.cursor = 'grabbing'; event.preventDefault(); render();
@@ -455,7 +456,7 @@ export function createPresentation(container, onPalletClick, { onArrive, onStatu
   window.__meanScene = Object.freeze({ snapshot() {
     return { phase, camera: { position: camera.position.toArray(), target: target.toArray(), fov: camera.fov, view: camera.view ? { ...camera.view } : null }, shellVisible: world.factoryShell.visible, contextLost,
       stage: state.stage, pending: state.pending ? { ...state.pending } : null, originals: [...state.originals],
-      interaction: { held: gesture?.moved ? gesture.pieceId : null, hovered: hovered?.userData.identity || null, destination: dropTarget, actionPreview: hoverAction ? { ...hoverAction } : null, pendingSingleClick: Boolean(pendingClick) },
+      interaction: { held: gesture?.moved ? gesture.pieceId : null, heldBounds: gesture?.moved ? (() => { const bounds = new THREE.Box3().setFromObject(gesture.object); return { min: bounds.min.toArray(), max: bounds.max.toArray() }; })() : null, hovered: hovered?.userData.identity || null, destination: dropTarget, actionPreview: hoverAction ? { ...hoverAction } : null, pendingSingleClick: Boolean(pendingClick) },
       pallets: pallets.map(p => ({ id: p.userData.id, quantity: p.userData.quantity, position: p.position.toArray() })),
       palletLabelBounds: pallets.map(pallet => {
         const tag = pallet.getObjectByName('Quantity Tag'); tag.geometry.computeBoundingBox();

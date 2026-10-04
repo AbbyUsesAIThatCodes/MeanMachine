@@ -16,18 +16,20 @@ test('gold triangles travel clockwise along all four field borders, retain trans
   const particles = page.locator('#prediction').locator('..').locator('.answer-particle');
   await expect(particles).toHaveCount(3);
   const styles = await particles.evaluateAll(elements => elements.map(e => ({
-    animation: getComputedStyle(e).animationName, duration: getComputedStyle(e).animationDuration, iterations: getComputedStyle(e).animationIterationCount,
+    animation: getComputedStyle(e).animationName, duration: getComputedStyle(e).animationDuration, iterations: getComputedStyle(e).animationIterationCount, delay: getComputedStyle(e).animationDelay, opacity: getComputedStyle(e).opacity,
     fill: getComputedStyle(e.querySelector('path')).fill, stroke: getComputedStyle(e.querySelector('path')).stroke, fillOpacity: getComputedStyle(e.querySelector('path')).fillOpacity,
   })));
-  expect(styles.every(s => s.animation === 'answer-orbit' && s.duration === '8s' && s.iterations === 'infinite')).toBe(true);
+  expect(styles.every(s => s.animation === 'answer-orbit' && s.duration === '1.6s' && s.iterations === 'infinite')).toBe(true);
   expect(styles.map(s => s.fill)).toEqual(Array(3).fill('rgb(255, 224, 121)'));
   expect(styles.map(s => s.stroke)).toEqual(Array(3).fill('rgb(191, 137, 16)'));
   expect(styles.map(s => Number(s.fillOpacity))).toEqual([1, 0.3, 1]);
+  expect(styles.map(s => Number.parseFloat(s.delay))).toEqual([0, -0.036, -0.072]);
+  expect(styles.every(s => s.opacity === '1')).toBe(true);
   const points = [];
   // Sample the real rendered animation, not a separate mathematical path.
   for (const fraction of [0.19, 0.44, 0.69, 0.94]) {
     const point = await particles.first().evaluate(async (particle, fraction) => {
-      const animation = particle.getAnimations()[0]; animation.pause(); animation.currentTime = fraction * 8000;
+      const animation = particle.getAnimations()[0]; animation.pause(); animation.currentTime = fraction * 1600;
       await new Promise(requestAnimationFrame);
       const p = particle.getBoundingClientRect(), field = particle.closest('.answer-field').querySelector('input').getBoundingClientRect();
       return { x: p.x + p.width / 2 - field.x, y: p.y + p.height / 2 - field.y, width: field.width, height: field.height };
@@ -75,8 +77,8 @@ for (const count of [2, 3, 4, 5, 6]) test(`${count} pallets preserve the chosen 
   await page.locator('#replay').click(); expect((await scene(page)).camera).not.toEqual(front);
 });
 
-for (const width of [1366, 1024]) test(`six pallets retain original camera angles with fixed visible framing at ${width}px`, async ({ page }) => {
-  await page.setViewportSize({ width, height: 768 }); await enter(page);
+for (const width of [1920, 1366, 1024]) test(`six pallets retain original camera angles with fixed visible framing at ${width}px`, async ({ page }) => {
+  await page.setViewportSize({ width, height: width === 1920 ? 1080 : 768 }); await enter(page);
   const overview = (await scene(page)).camera;
   await page.locator('#front-view').click(); const front = (await scene(page)).camera;
   await page.locator('#six-pallet-example').click();
@@ -85,6 +87,9 @@ for (const width of [1366, 1024]) test(`six pallets retain original camera angle
     const direction = camera => { const delta = camera.position.map((value, i) => value - camera.target[i]), length = Math.hypot(...delta); return delta.map(value => value / length); };
     direction(six.camera).forEach((value, i) => expect(value).toBeCloseTo(direction(original)[i], 12));
     expect(six.camera.fov).toBe(original.fov);
+    // Readable target size prevents a return to Build015's excessive fit margin.
+    const minimumLabelWidth = width === 1920 ? 110 : width === 1366 ? 60 : 52;
+    expect(Math.min(...six.palletLabelBounds.map(label => label.width))).toBeGreaterThan(minimumLabelWidth);
     for (const point of [...six.topPickPoints, ...six.pickPoints, ...six.palletLabelBounds.flatMap(label => label.points)]) {
       expect(await page.evaluate(({ x, y }) => document.elementFromPoint(x, y) === document.querySelector('#scene canvas'), point)).toBe(true);
     }

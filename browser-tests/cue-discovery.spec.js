@@ -28,9 +28,9 @@ for (const width of [1366, 1024]) test(`the existing six-pallet example is direc
   await expect(page.locator('#originals strong')).toHaveText(['2', '4', '9']);
 });
 
-test('the slow cue repeats until field or answer-button engagement and stays quiet after incorrect input', async ({ page }) => {
+test('the continuous cue repeats until field or answer-button engagement and stays quiet after incorrect input', async ({ page }) => {
   await enter(page);
-  expect(await cue(page, 'prediction')).toMatchObject({ engaged: 'false', animation: 'answer-glow', duration: '4s', iterations: 'infinite', sparkle: 'answer-orbit', sparkleDuration: '8s' });
+  expect(await cue(page, 'prediction')).toMatchObject({ engaged: 'false', animation: 'answer-glow', duration: '4s', iterations: 'infinite', sparkle: 'answer-orbit', sparkleDuration: '1.6s' });
   await page.waitForTimeout(4300);
   expect(await page.locator('#prediction').evaluate(e => e.getAnimations()[0].currentTime)).toBeGreaterThan(4000);
   expect(await cue(page, 'prediction')).toMatchObject({ animation: 'answer-glow', iterations: 'infinite' });
