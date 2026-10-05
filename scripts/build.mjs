@@ -1,6 +1,9 @@
 import { build } from 'vite';
 import { reserveBuild, finishBuild, identityPlugin } from './build-identity.mjs';
 import { packageArtifact } from './package-artifact.mjs';
+import { readFile } from 'node:fs/promises';
+import { parseContent } from '../src/content-validation.js';
+parseContent(await readFile('content/default.json', 'utf8'));
 const manifest = await reserveBuild();
 const outDir = `artifacts/${manifest.id}`;
 try {

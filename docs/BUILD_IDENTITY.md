@@ -42,3 +42,7 @@ The source review at port 18882 is explicitly **Live Development**, independent 
 ## Focused Review Continuation
 
 The isolated `MeanMachine-drag-framing-review` checkout carries forward reservations 001-015 and is now the sole continuation allocator for this local scope. Its `.build/ledger.jsonl` retains every subsequent development and production reservation, including earlier diagnostics. `MeanMachine-camera-cue-review` preserves Build015, `MeanMachine-cue-review` preserves Build011, `MeanMachine-next-review` preserves Build008, and the older source/packaging copies preserve their earlier builds. Do not allocate from those preserved ledgers or reset counters. Version `0.1.0`, codename **Foam Rings**, and the local scope remain appropriate; the ordinal, UTC time, source revision and fingerprint identify each build. Current generated identity is in `.build/latest.json` and `.build/CURRENT_BUILD.md`.
+
+## Isolated JSON Retrofit
+
+`MeanMachine-json-review` uses independent local scope `local-20261005-json-018` and its own durable ledger. Source Build018 and its ledger remain untouched. Version `0.1.0` / Foam Rings remains the development milestone. Content schema `1.0.0` and revision `018.1` are separate metadata displayed under Reference → Editable Content. Validation runs before building; portable packages include author JSON/schema/instructions. The authoritative current review identity is `.build/latest.json` / `.build/CURRENT_BUILD.md`; see [Content Review](content/REVIEW.md).

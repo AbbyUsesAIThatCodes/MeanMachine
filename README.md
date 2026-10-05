@@ -1,3 +1,7 @@
+# Mean Machine JSON Content Review
+
+This isolated review retrofits tested Build018 with editable content. Start with [Content Authoring](docs/content/AUTHORING.md), [Architecture](docs/content/ARCHITECTURE.md), and [Validation Evidence](docs/content/REVIEW.md). The current local artifact is recorded in `.build/CURRENT_BUILD.md`; older build references below are historical.
+
 # Mean Machine
 
 A local 3D classroom game for exploring the arithmetic mean by sharing colorful foam packing rings equally among pallets.

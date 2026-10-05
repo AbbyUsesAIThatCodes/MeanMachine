@@ -15,11 +15,21 @@ export async function packageArtifact(outDir, manifest) {
   await mkdir(path.join(outDir, 'provenance'), { recursive: true });
   await copyFile('docs/shared-assets/CONSUMER-LOCK.json', path.join(outDir, 'provenance/shared-world-lock.json'));
   await copyFile('src/shared/manifest.json', path.join(outDir, 'provenance/shared-world-manifest.json'));
+  await mkdir(path.join(outDir, 'content'), { recursive: true });
+  for (const file of ['default.json', 'schema.json']) await copyFile(`content/${file}`, path.join(outDir, 'content', file));
+  await copyFile('docs/content/AUTHORING.md', path.join(outDir, 'content', 'AUTHORING.md'));
+  await copyFile('docs/content/FIELD-CATALOG.md', path.join(outDir, 'content', 'FIELD-CATALOG.md'));
+  await copyFile('docs/content/ARCHITECTURE.md', path.join(outDir, 'content', 'ARCHITECTURE.md'));
+  await copyFile('docs/content/REVIEW.md', path.join(outDir, 'content', 'REVIEW.md'));
   await writeFile(path.join(outDir, 'READ-ME.txt'), [
     'MEAN MACHINE - LOCAL CLASSROOM REVIEW', '', `Build: ${manifest.id}`, '',
     '1. Extract this entire ZIP.',
     '2. Open Start-Mean-Machine.html in Vivaldi or Edge. No server, account, install, or internet connection is needed.',
     '3. Enter the factory, record a prediction, share equally, calculate, and explain.', '',
+    'EDITABLE CONTENT: Copy content/default.json, edit it, then use Reference > Editable Content > Apply Content And Restart.',
+    'Import works offline and needs no rebuild. It replaces this page session only and starts a fresh shipment; current notes are cleared.',
+    'Invalid packs leave active content and activity unchanged. Reopening uses bundled defaults. Editing the adjacent JSON alone does not change the embedded game.',
+    'Content schema 1.0.0 and content revision 018.1 are separate from the app build. See content/AUTHORING.md and content/FIELD-CATALOG.md.', '',
     'Original whole shipment: 2, 4, 9. Original fractional shipment: 2, 5.',
     'Gold triangles travel clockwise around the required field on a continuous 1.6-second circuit until you click its field or answer button. The border and guidance remain afterward.',
     'Drag a top gear, click source/destination pallets, or use the From/To keyboard controls.',

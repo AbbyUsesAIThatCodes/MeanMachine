@@ -5,47 +5,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#173d44" />
     <link rel="icon" href="data:," />
-    <title>Mean Machine — Equal Shares</title>
+    <title><!--content:shell.mean-machine-equal-shares-->Mean Machine — Equal Shares</title>
   </head>
   <body>
     <div id="scene" aria-hidden="true"></div>
     <header class="topbar">
-      <div><p class="eyebrow">The Foam-Ring Factory</p><h1>Mean Machine</h1><p id="compact-build" class="compact-build"></p></div>
-      <div class="toolbar"><label class="motion"><input id="reduce-motion" type="checkbox" /> Reduce Motion</label><button id="fullscreen" class="quiet">Fullscreen</button><button id="reference-button" class="quiet" aria-expanded="false" aria-controls="reference">Reference</button></div>
+      <div><p class="eyebrow"><!--content:shell.the-foam-ring-factory-->The Foam-Ring Factory</p><h1><!--content:shell.mean-machine-->Mean Machine</h1><p id="compact-build" class="compact-build"></p></div>
+      <div class="toolbar"><label class="motion"><input id="reduce-motion" type="checkbox" /><!--content:shell.reduce-motion--> Reduce Motion</label><button id="fullscreen" class="quiet"><!--content:shell.fullscreen-->Fullscreen</button><button id="reference-button" class="quiet" aria-expanded="false" aria-controls="reference"><!--content:shell.reference-->Reference</button></div>
     </header>
     <section id="intro" class="card intro" aria-labelledby="intro-title">
-      <p class="eyebrow">One Factory, Two Ways To Explore</p><h2 id="intro-title">Welcome To Foam Works</h2>
-      <p>Head inside to share colorful cargo equally among the labeled pallets.</p>
-      <div class="intro-actions"><button id="enter-factory" class="primary">Enter The Factory</button><button id="skip-intro">Skip Intro</button></div>
+      <p class="eyebrow"><!--content:shell.one-factory-two-ways-to-explore-->One Factory, Two Ways To Explore</p><h2 id="intro-title"><!--content:shell.welcome-to-foam-works-->Welcome To Foam Works</h2>
+      <p><!--content:shell.head-inside-to-share-colorful-cargo-equally-among-the-labeled-pa-->Head inside to share colorful cargo equally among the labeled pallets.</p>
+      <div class="intro-actions"><button id="enter-factory" class="primary"><!--content:shell.enter-the-factory-->Enter The Factory</button><button id="skip-intro"><!--content:shell.skip-intro-->Skip Intro</button></div>
     </section>
-    <div id="view-controls" class="view-controls" aria-label="Camera Views" hidden><button id="overview" aria-pressed="true">Overview</button><button id="front-view" aria-pressed="false">Front View</button></div>
+    <div id="view-controls" class="view-controls" aria-label="Camera Views" hidden><button id="overview" aria-pressed="true"><!--content:shell.overview-->Overview</button><button id="front-view" aria-pressed="false"><!--content:shell.front-view-->Front View</button></div>
     <p id="gear-hint" class="gear-hint" hidden></p>
     <main id="app" hidden>
       <aside class="shipment card" aria-label="Original Shipment">
-        <p class="eyebrow" id="shipment-code"></p><h2>Original Shipment</h2>
+        <p class="eyebrow" id="shipment-code"></p><h2><!--content:shell.original-shipment-->Original Shipment</h2>
         <div id="originals"></div>
-        <p class="small">Each labeled pallet counts once. One whole gear is one unit; two halves also make one unit.</p>
+        <p class="small"><!--content:shell.each-labeled-pallet-counts-once-one-whole-gear-is-one-unit-two-h-->Each labeled pallet counts once. One whole gear is one unit; two halves also make one unit.</p>
         <p id="prediction-record" class="prediction-record" hidden></p>
       </aside>
       <section class="activity card" aria-labelledby="stage-title">
-        <ol id="steps" aria-label="Activity Steps"><li data-step="prediction">Predict</li><li data-step="sharing">Share</li><li data-step="calculation">Calculate</li><li data-step="explanation">Explain</li></ol>
+        <ol id="steps" aria-label="Activity Steps"><li data-step="prediction"><!--content:shell.predict-->Predict</li><li data-step="sharing"><!--content:shell.share-->Share</li><li data-step="calculation"><!--content:shell.calculate-->Calculate</li><li data-step="explanation"><!--content:shell.explain-->Explain</li></ol>
         <h2 id="stage-title" tabindex="-1"></h2>
         <div id="stage-content"></div>
         <p id="feedback" role="status" aria-live="polite" aria-atomic="true"></p>
       </section>
       <section id="loads" class="loads" aria-label="Current Loads"></section>
-      <div class="bottom-toolbar"><button id="undo">Undo Move</button><button id="reset">Reset Arrangement</button><button id="replay">Replay Shipment</button><button id="next">Try Half-Rings</button><button id="six-pallet-example">Try 6-Pallet Example</button></div>
+      <div class="bottom-toolbar"><button id="undo"><!--content:shell.undo-move-->Undo Move</button><button id="reset"><!--content:shell.reset-arrangement-->Reset Arrangement</button><button id="replay"><!--content:shell.replay-shipment-->Replay Shipment</button><button id="next"><!--content:shell.try-half-rings-->Try Half-Rings</button><button id="six-pallet-example"><!--content:shell.try-6-pallet-example-->Try 6-Pallet Example</button></div>
     </main>
     <aside id="reference" class="card reference" hidden>
-      <h2>Factory Reference</h2>
-      <ul><li><strong>Pallets</strong><ul><li>Each labeled pallet represents one original value. Count the pallets, not the physical gear pieces.</li><li>Equal starting values still count separately. An empty pallet also counts.</li></ul></li><li><strong>Gear Quantity</strong><ul><li>One whole gear is one unit; two half-gears together are one unit.</li><li>Moving, splitting, or merging preserves the total and the original records.</li></ul></li><li><strong>Mean</strong><ul><li>The equal share: total gears ÷ number of pallets.</li><li>It can be a value that never appeared in the original data.</li></ul></li><li><strong>Median</strong><ul><li>Found by ordering the original values and locating the middle.</li><li>Median Depot practices that different action.</li></ul></li></ul>
-      <p class="small">In skimmer statistics, each recorded trial counts once. Repacking this model does not change recorded flight distances.</p>
-      <details><summary>Larger Layout Review</summary>
-        <p class="small">These fixed examples let you review four to six pallets. Opening one starts a new shipment. The two original lessons stay available through the shipment button.</p>
-        <label for="review-pallet-count">Pallets In Layout Review</label><select id="review-pallet-count"><option value="4">4 Pallets</option><option value="5">5 Pallets</option><option value="6" selected>6 Pallets</option></select><button id="open-layout-review">Open Layout Review</button>
+      <h2><!--content:shell.factory-reference-->Factory Reference</h2>
+      <ul id="encyclopedia-entries"></ul>
+      <p class="small"><!--content:shell.in-skimmer-statistics-each-recorded-trial-counts-once-repacking-->In skimmer statistics, each recorded trial counts once. Repacking this model does not change recorded flight distances.</p>
+      <details><summary><!--content:shell.larger-layout-review-->Larger Layout Review</summary>
+        <p class="small"><!--content:shell.these-fixed-examples-let-you-review-four-to-six-pallets-opening-->These fixed examples let you review four to six pallets. Opening one starts a new shipment. The two original lessons stay available through the shipment button.</p>
+        <label for="review-pallet-count"><!--content:shell.pallets-in-layout-review-->Pallets In Layout Review</label><select id="review-pallet-count"><option value="4"><!--content:shell.4-pallets-->4 Pallets</option><option value="5"><!--content:shell.5-pallets-->5 Pallets</option><option value="6" selected><!--content:shell.6-pallets-->6 Pallets</option></select><button id="open-layout-review"><!--content:shell.open-layout-review-->Open Layout Review</button>
       </details>
-      <details><summary>Full Build Details</summary><pre id="build-provenance"></pre></details>
-      <button id="close-reference">Close Reference</button>
+      <details><summary><!--content:shell.full-build-details-->Full Build Details</summary><pre id="build-provenance"></pre></details>
+      <button id="close-reference"><!--content:shell.close-reference-->Close Reference</button>
     </aside>
     <footer id="build-id" class="build-id"></footer>
     <script type="module" src="/src/main.js"></script>

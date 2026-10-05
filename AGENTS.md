@@ -8,3 +8,5 @@
 - The October 3 issues #4/#5/#9 checkpoint uses original source and is recorded in [Gear Review](docs/GEAR-REVIEW.md). Preserve its original Build006 comparison and frozen shared bytes. Keep matching families legal after student transfers; prevent adjacent duplicates only in generated starting piles.
 - Run `pnpm test` for state/build changes and the classroom Playwright flows against the locally running app for UI changes. Report real verification limits.
 - Use only the public curriculum adaptation. DM 1.3 is Measuring Matters; DM 1.4 is Skimmer Statistics.
+
+- Editable content: follow [Authoring](docs/content/AUTHORING.md) and [Content Contract](docs/content/ARCHITECTURE.md). Preserve canonical 018 defaults; run `npm run content:check` and the content parity tests. Do not regenerate stable IDs or edit adapter contracts as author content.

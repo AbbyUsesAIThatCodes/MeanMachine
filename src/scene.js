@@ -1,3 +1,4 @@
+import { message as contentMessage } from './content-runtime.js';
 import * as THREE from 'three';
 import { createSharedWorld } from './shared/world.js';
 import { createPallet, RING_THICKNESS } from './shared/cargo.js';
@@ -15,7 +16,7 @@ const smooth = t => t * t * (3 - 2 * t);
 export function createPresentation(container, onPalletClick, { onArrive, onStatus, onTransfer, onDragActive, onPieceAction, onHint, onBlocked } = {}) {
   let renderer;
   try { renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false }); }
-  catch { queueMicrotask(() => { onArrive?.(); onStatus?.('The 3D view is unavailable. All sharing controls remain available.'); }); return { sync() {}, async animate() {}, startIntro() {}, skipIntro() {}, setReducedMotion() {}, setView() {}, previewAction() {} }; }
+  catch { queueMicrotask(() => { onArrive?.(); onStatus?.(contentMessage("scene.the-3d-view-is-unavailable-all-sharing-controls-remain-available")); }); return { sync() {}, async animate() {}, startIntro() {}, skipIntro() {}, setReducedMotion() {}, setView() {}, previewAction() {} }; }
   renderer.setPixelRatio(Math.min(devicePixelRatio, 1.75));
   renderer.setSize(innerWidth, innerHeight);
   renderer.shadowMap.enabled = true;
@@ -116,7 +117,7 @@ export function createPresentation(container, onPalletClick, { onArrive, onStatu
   function createPallets() {
     clearCargo();
     state.pallets.forEach((_, index) => {
-      const pallet = createPallet({ id: letter(index), label: `Pallet ${letter(index)}`, quantity: 0 });
+      const pallet = createPallet({ id: letter(index), label: contentMessage("scene.pallet", { v0: letter(index) }), quantity: 0 });
       // Move only the generated display board forward, so it cannot mask the
       // lowest rings. Frozen source geometry and the pallet footprint stay intact.
       const board = pallet.children.find(child => child.isMesh && child.position.z === 0.99 && child.position.y === 0.62);
@@ -150,8 +151,8 @@ export function createPresentation(container, onPalletClick, { onArrive, onStatu
       const old = pallets[index].getObjectByName('Quantity Tag'); if (old) disposeObject(old);
       const large = next.pallets.length > 3;
       const tag = large
-        ? createLabel(pallets[index], `${letter(index)}: ${formatQuantity(quantity)}`, 1.55, 0.747, [0, 0.517, 1.427])
-        : createLabel(pallets[index], formatQuantity(quantity), 1.29, 0.6225, [0, 0.35, 1.442], { subtitle: `Pallet ${letter(index)} • Current Load` });
+        ? createLabel(pallets[index], contentMessage("scene.text", { v0: letter(index), v1: formatQuantity(quantity) }), 1.55, 0.747, [0, 0.517, 1.427])
+        : createLabel(pallets[index], formatQuantity(quantity), 1.29, 0.6225, [0, 0.35, 1.442], { subtitle: contentMessage("scene.pallet-current-load", { v0: letter(index) }) });
       if (large) tag.rotation.x = -Math.PI / 4;
       tag.name = 'Quantity Tag'; pallets[index].userData.halfUnits = quantity;
       pallets[index].userData.quantity = quantity / 2;
@@ -171,7 +172,7 @@ export function createPresentation(container, onPalletClick, { onArrive, onStatu
   }
   function sync(next, selected) {
     if (state && (next.pending || next.stage !== state.stage || next.pallets !== state.pallets)) clearClickIntent();
-    if (gesture && (next.pending || next.stage !== 'sharing' || next.key !== state?.key || next.pallets[gesture.source]?.at(-1)?.id !== gesture.pieceId)) cancelDrag('Pickup canceled.');
+    if (gesture && (next.pending || next.stage !== 'sharing' || next.key !== state?.key || next.pallets[gesture.source]?.at(-1)?.id !== gesture.pieceId)) cancelDrag(contentMessage("scene.pickup-canceled"));
     state = next;
     if (next.pending || next.stage !== 'sharing') showHover(null);
     const layoutKey = `${next.key}:${next.originals.join(',')}`;
@@ -329,7 +330,7 @@ export function createPresentation(container, onPalletClick, { onArrive, onStatu
       }
       glow.visible = Boolean(targetObject);
     });
-    onHint?.(action?.type === 'split' ? 'Double-click to split this gear. Drag to move it.' : action?.type === 'merge' ? 'Double-click either highlighted half to merge this top pair.' : object ? 'Drag this half to move it. Merging needs its matching half beside it at the top.' : '');
+    onHint?.(action?.type === 'split' ? contentMessage("scene.double-click-to-split-this-gear-drag-to-move-it") : action?.type === 'merge' ? contentMessage("scene.double-click-either-highlighted-half-to-merge-this-top-pair") : object ? contentMessage("scene.drag-this-half-to-move-it-merging-needs-its-matching-half-beside") : '');
     renderer.domElement.style.cursor = gesture?.moved ? 'grabbing' : object ? 'grab' : canPick() ? 'pointer' : 'default';
     render();
   }
@@ -356,7 +357,7 @@ export function createPresentation(container, onPalletClick, { onArrive, onStatu
     if (previous?.moved) onDragActive?.(false);
     return previous;
   }
-  function cancelDrag(message = 'Pickup canceled. The same piece returned to its stack.') {
+  function cancelDrag(message = contentMessage("scene.pickup-canceled-the-same-piece-returned-to-its-stack")) {
     press = null; clearClickIntent();
     if (!gesture) return;
     const moved = gesture.moved; suppressClick = true;
@@ -383,7 +384,7 @@ export function createPresentation(container, onPalletClick, { onArrive, onStatu
     if (gesture) {
       if (event.pointerId !== gesture.pointerId) return;
       if (!gesture.moved && Math.hypot(event.clientX - gesture.x, event.clientY - gesture.y) < 5) return;
-      if (!gesture.moved) { gesture.moved = true; suppressClick = true; showHover(null); onDragActive?.(true); onStatus?.('Gear picked up. Drop on another pallet, or press Escape to cancel.'); }
+      if (!gesture.moved) { gesture.moved = true; suppressClick = true; showHover(null); onDragActive?.(true); onStatus?.(contentMessage("scene.gear-picked-up-drop-on-another-pallet-or-press-escape-to-cancel")); }
       aim(event);
       const hit = projectLevelDrag(raycaster.ray, gesture.drag);
       if (hit) gesture.object.position.copy(hit);
@@ -397,11 +398,11 @@ export function createPresentation(container, onPalletClick, { onArrive, onStatu
     if (!gesture || gesture.pointerId !== event.pointerId) return;
     if (!gesture.moved) { releaseGesture(); return; }
     const destination = palletAt(event, gesture.pieceId);
-    if (destination === null || destination === gesture.source) { cancelDrag('Drop canceled. Choose a different pallet; no cargo changed.'); return; }
+    if (destination === null || destination === gesture.source) { cancelDrag(contentMessage("scene.drop-canceled-choose-a-different-pallet-no-cargo-changed")); return; }
     const completed = releaseGesture(); suppressClick = true; clearClickIntent();
     try {
       if (!onTransfer?.(completed.source, destination)) { arrange(state); showDestination(null); render(); }
-    } catch { arrange(state); showDestination(null); render(); onStatus?.('Drop canceled. Your cargo is unchanged.'); }
+    } catch { arrange(state); showDestination(null); render(); onStatus?.(contentMessage("scene.drop-canceled-your-cargo-is-unchanged")); }
   });
   renderer.domElement.addEventListener('pointercancel', () => cancelDrag());
   renderer.domElement.addEventListener('lostpointercapture', () => { if (gesture || press) cancelDrag(); });
@@ -426,7 +427,7 @@ export function createPresentation(container, onPalletClick, { onArrive, onStatu
       const matches = first && first.key === key && first.pallets === state.pallets;
       clearClickIntent(); event.preventDefault();
       if (matches && action) onPieceAction?.(pieceId);
-      else if (pieceId) onStatus?.('Split a whole top gear, or merge its matching halves together at the top of one pallet.');
+      else if (pieceId) onStatus?.(contentMessage("scene.split-a-whole-top-gear-or-merge-its-matching-halves-together-at"));
       return;
     }
     clearClickIntent();
@@ -450,8 +451,8 @@ export function createPresentation(container, onPalletClick, { onArrive, onStatu
     render();
   });
   document.addEventListener('visibilitychange', () => { if (document.hidden) { cancelDrag(); if (phase === 'entering') arrive(); activeMotion?.finish(); } });
-  renderer.domElement.addEventListener('webglcontextlost', event => { event.preventDefault(); cancelDrag(); contextLost = true; if (phase !== 'teaching') arrive(); activeMotion?.finish(); onStatus?.('The 3D view paused. Your exact quantities are safe; all sharing controls remain available.'); });
-  renderer.domElement.addEventListener('webglcontextrestored', () => { contextLost = false; render(); onStatus?.('The 3D view is ready again.'); });
+  renderer.domElement.addEventListener('webglcontextlost', event => { event.preventDefault(); cancelDrag(); contextLost = true; if (phase !== 'teaching') arrive(); activeMotion?.finish(); onStatus?.(contentMessage("scene.the-3d-view-paused-your-exact-quantities-are-safe-all-sharing-co")); });
+  renderer.domElement.addEventListener('webglcontextrestored', () => { contextLost = false; render(); onStatus?.(contentMessage("scene.the-3d-view-is-ready-again")); });
   // Read-only scene evidence for browser QA; no game-state mutations are exposed.
   window.__meanScene = Object.freeze({ snapshot() {
     return { phase, camera: { position: camera.position.toArray(), target: target.toArray(), fov: camera.fov, view: camera.view ? { ...camera.view } : null }, shellVisible: world.factoryShell.visible, contextLost,

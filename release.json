@@ -3,7 +3,7 @@
   "codename": "Foam Rings",
   "slug": "Foam-Rings",
   "status": "development",
-  "scope": "local-20261003-abigail-gears",
+  "scope": "local-20261005-json-018",
   "target": "web",
-  "compatibility": "First local classroom prototype; no saved learner data or public API. Codename applies to the 0.1 development milestone."
+  "compatibility": "Development retrofit of tested 018; session-only learner state and original piece/activity IDs unchanged. Content schema 1.0.0 is independent of app version. No persistent learner saves or migrations."
 }

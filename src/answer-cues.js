@@ -1,3 +1,4 @@
+import { message as contentMessage } from './content-runtime.js';
 // Each new field prompts gently until engaged. Validation never restarts a
 // field the student already acknowledged; a new form creates fresh prompts.
 export function bindAnswerCues(form, { checks, pendingMessage, readyMessage }) {
@@ -16,7 +17,7 @@ export function bindAnswerCues(form, { checks, pendingMessage, readyMessage }) {
     }
     wrapper.append(particles);
     const marker = document.createElement('span'); marker.className = 'answer-ready';
-    marker.textContent = '✓ Ready'; marker.setAttribute('aria-hidden', 'true'); wrapper.append(marker);
+    marker.textContent = contentMessage("answer-cues.ready"); marker.setAttribute('aria-hidden', 'true'); wrapper.append(marker);
     const field = { ...check, input, wrapper, engaged: false };
     input.setAttribute('aria-describedby', guidance.id);
     for (const event of ['pointerdown', 'click', 'keydown', 'input']) {
@@ -46,7 +47,7 @@ export function bindAnswerCues(form, { checks, pendingMessage, readyMessage }) {
       field.input.setAttribute('aria-invalid', String(Boolean(field.input.value.trim()) && !valid));
     }
     guidance.classList.toggle('is-ready', !current);
-    guidance.textContent = current ? `${pendingMessage} Next: ${current.label}.` : readyMessage;
+    guidance.textContent = current ? contentMessage("answer-cues.next", { v0: pendingMessage, v1: current.label }) : readyMessage;
   }
   refresh();
   return { refresh, focusRequired() { required?.focus({ preventScroll: true }); }, reveal: refresh };
