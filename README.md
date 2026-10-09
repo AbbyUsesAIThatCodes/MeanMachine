@@ -1,3 +1,9 @@
+# Play Online
+
+**[Play MeanMachine Online](https://abbyusesaithatcodes.github.io/MeanMachine/)**
+
+The October 9 publication promotes the existing tested runtime. See [Verified Pages Release](deployment/RELEASE.md) for identity, checks, and retained limitations. Earlier local-only status below is historical.
+
 # Mean Machine JSON Content Review
 
 This isolated review retrofits tested Build018 with editable content. Start with [Content Authoring](docs/content/AUTHORING.md), [Architecture](docs/content/ARCHITECTURE.md), and [Validation Evidence](docs/content/REVIEW.md). The current local artifact is recorded in `.build/CURRENT_BUILD.md`; older build references below are historical.

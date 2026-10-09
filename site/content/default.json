@@ -1,0 +1,285 @@
+{
+  "schemaVersion": "1.0.0",
+  "contentRevision": "018.1",
+  "packId": "mean-machine-018",
+  "adapter": "mean-sharing-v1",
+  "lessons": [
+    {
+      "id": "whole",
+      "code": "MM-01",
+      "title": "The First Shipment",
+      "values": [
+        2,
+        4,
+        9
+      ],
+      "halves": false,
+      "mechanic": "equal-share-half-units",
+      "stageOrder": [
+        "prediction",
+        "sharing",
+        "calculation",
+        "explanation",
+        "complete"
+      ],
+      "encyclopediaRefs": [
+        "pallets",
+        "gear-quantity",
+        "mean"
+      ]
+    },
+    {
+      "id": "halves",
+      "code": "MM-02",
+      "title": "A Share Between Whole Numbers",
+      "values": [
+        2,
+        5
+      ],
+      "halves": true,
+      "mechanic": "equal-share-half-units",
+      "stageOrder": [
+        "prediction",
+        "sharing",
+        "calculation",
+        "explanation",
+        "complete"
+      ],
+      "encyclopediaRefs": [
+        "pallets",
+        "gear-quantity",
+        "mean"
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "layout-4",
+      "palletCount": 4,
+      "shipmentId": "halves",
+      "values": [
+        1,
+        3,
+        2,
+        6
+      ],
+      "mechanic": "equal-share-half-units",
+      "encyclopediaRefs": [
+        "pallets",
+        "gear-quantity",
+        "mean"
+      ]
+    },
+    {
+      "id": "layout-5",
+      "palletCount": 5,
+      "shipmentId": "halves",
+      "values": [
+        1,
+        3,
+        5,
+        2,
+        4
+      ],
+      "mechanic": "equal-share-half-units",
+      "encyclopediaRefs": [
+        "pallets",
+        "gear-quantity",
+        "mean"
+      ]
+    },
+    {
+      "id": "layout-6",
+      "palletCount": 6,
+      "shipmentId": "halves",
+      "values": [
+        1,
+        5,
+        2,
+        4,
+        3,
+        3
+      ],
+      "mechanic": "equal-share-half-units",
+      "encyclopediaRefs": [
+        "pallets",
+        "gear-quantity",
+        "mean"
+      ]
+    }
+  ],
+  "encyclopedia": [
+    {
+      "id": "pallets",
+      "title": "Pallets",
+      "paragraphs": [
+        "Each labeled pallet represents one original value. Count the pallets, not the physical gear pieces.",
+        "Equal starting values still count separately. An empty pallet also counts."
+      ]
+    },
+    {
+      "id": "gear-quantity",
+      "title": "Gear Quantity",
+      "paragraphs": [
+        "One whole gear is one unit; two half-gears together are one unit.",
+        "Moving, splitting, or merging preserves the total and the original records."
+      ]
+    },
+    {
+      "id": "mean",
+      "title": "Mean",
+      "paragraphs": [
+        "The equal share: total gears ÷ number of pallets.",
+        "It can be a value that never appeared in the original data."
+      ]
+    },
+    {
+      "id": "median",
+      "title": "Median",
+      "paragraphs": [
+        "Found by ordering the original values and locating the middle.",
+        "Median Depot practices that different action."
+      ]
+    }
+  ],
+  "messages": {
+    "main.fullscreen-is-unavailable-here-you-can-keep-using-the-window": "Fullscreen is unavailable here. You can keep using the window.",
+    "main.pallet-example-ready-start-with-your-prediction": "{{v0}}-pallet example ready. Start with your prediction.",
+    "main.entering-the-factory": "Entering The Factory",
+    "main.new-shipment-ready-start-with-a-prediction": "New shipment ready. Start with a prediction.",
+    "main.same-shipment-fresh-prediction": "Same shipment, fresh prediction.",
+    "main.original-arrangement-restored-your-first-prediction-is-retained": "Original arrangement restored. Your first prediction is retained.",
+    "main.last-move-split-or-merge-undone": "Last move, split, or merge undone.",
+    "main.the-cargo-animation-stopped-the-exact-move-is-complete-you-can-c": "The cargo animation stopped. The exact move is complete; you can continue or undo it.",
+    "main.moving-gear-unit-the-original-pallet-records-stay-unchanged": "Moving {{v0}} gear unit. The original pallet records stay unchanged.",
+    "main.these-two-matching-halves-become-one-whole-gear-the-quantity-sta": "These two matching halves become one whole gear. The quantity stays the same.",
+    "main.one-whole-gear-becomes-two-halves-the-quantity-stays-the-same": "One whole gear becomes two halves. The quantity stays the same.",
+    "main.selection-canceled": "Selection canceled.",
+    "main.pallet-selected": "Pallet {{v0}} selected.",
+    "main.this-pallet-is-empty-choose-a-source-with-cargo": "This pallet is empty. Choose a source with cargo.",
+    "main.text": "{{v0}} ÷ {{v1}} = {{v2}}",
+    "main.you-shared-the-total-equally-and-connected-it-to-the-mean-your-d": "<p>You shared the total equally and connected it to the mean.</p><p id=\"completed-equation\" class=\"equation\"></p><p class=\"small\">Your Discussion Notes</p><p id=\"completed-explanation\"></p><p class=\"small\">For your skimmer trials, use your recorded distances, keep their units, and calculate before rounding the reported mean.</p>",
+    "main.your-explanation-is-ready-choose-finish-shipment-to-complete-thi": "Your explanation is ready. Choose Finish Shipment to complete this lesson.",
+    "main.gear-movement-stays-paused-to-keep-your-equal-shares-add-your-ex": "Gear movement stays paused to keep your equal shares. Add your explanation in the golden field.",
+    "main.your-explanation-or-discussion-notes": "your explanation or discussion notes",
+    "main.equal-sharing-and-calculation-are-complete-keep-your-explanation": "Equal sharing and calculation are complete. Keep your explanation in your classroom notebook.",
+    "main.why-divide-by-pallets-what-changed-and-what-stayed-the-same-comp": "<p class=\"equation\">({{v0}}) ÷ {{v1}}<br />= {{v2}}</p><p>Why divide by {{v3}} pallets? What changed, and what stayed the same? Compare the mean with your prediction of {{v4}}.</p><form id=\"explanation-form\" novalidate><label for=\"explanation\">My Explanation / Discussion Notes</label><textarea id=\"explanation\" rows=\"3\" required></textarea><button class=\"primary\">Finish Shipment</button></form><p class=\"small\">Discuss your reasoning with your teacher. Written reasoning is not automatically graded or saved after you leave.</p>",
+    "main.text-2": "{{v0}} = {{v1}}",
+    "main.all-three-answers-are-ready-choose-check-calculation-to-continue": "All three answers are ready. Choose Check Calculation to continue. Gear movement stays paused to keep your equal shares.",
+    "main.gear-movement-is-paused-while-you-record-the-equal-shares-answer": "Gear movement is paused while you record the equal shares. Answer the golden field.",
+    "main.gears-per-pallet": "gears per pallet",
+    "main.number-of-pallets": "number of pallets",
+    "main.total-gears": "total gears",
+    "main.your-loads-are-equal-use-the-original-shipment-to-complete-the-c": "<p>Your loads are equal. Use the <strong>Original Shipment</strong> to complete the calculation. Two halves count as one gear.</p><form id=\"calculation-form\" novalidate><label for=\"total\">Total Gears</label><input id=\"total\" inputmode=\"decimal\" required /><label for=\"count\">Number Of Pallets</label><input id=\"count\" inputmode=\"numeric\" required /><label for=\"mean\">Mean: Gears Per Pallet</label><input id=\"mean\" inputmode=\"decimal\" required /><button class=\"primary\">Check Calculation</button></form>",
+    "main.from-to-move-top-ring-split-top-gear-into-halves-merge-matching": "<p id=\"selection-note\" class=\"selection-note\"></p><div class=\"control-row\"><div><label for=\"source\">From</label><select id=\"source\">{{v0}}</select></div><div><label for=\"destination\">To</label><select id=\"destination\">{{v1}}</select></div></div><div class=\"control-stack\"><button id=\"move\">Move Top Ring</button><button id=\"split\">Split Top Gear Into Halves</button><button id=\"merge\">Merge Matching Top Halves</button><button id=\"dispatch\" class=\"primary\">Dispatch: Check Equal Shares</button></div><p class=\"small\">Double-click a whole top gear to split it, or either highlighted matching top half to merge the pair. Keep every unit of cargo; all pallets must have the same <strong>quantity</strong>.</p>",
+    "main.pallet": "<option value=\"{{v0}}\">Pallet {{v1}}</option>",
+    "main.prediction-ready-choose-record-prediction-to-unlock-gear-movemen": "Prediction ready. Choose Record Prediction to unlock gear movement.",
+    "main.gear-movement-is-paused-until-you-record-your-prediction-answer": "Gear movement is paused until you record your prediction. Answer the golden field.",
+    "main.your-predicted-share": "your predicted share",
+    "main.prediction-recorded-explore-the-cargo-and-make-equal-shares": "Prediction recorded. Explore the cargo and make equal shares.",
+    "main.imagine-sharing-all-the-cargo-equally-how-many-ring-units-might": "<p>Imagine sharing all the cargo equally. How many ring units might each pallet receive?</p><form id=\"prediction-form\"><label for=\"prediction\">My Predicted Share</label><input id=\"prediction\" name=\"prediction\" inputmode=\"decimal\" autocomplete=\"off\" placeholder=\"Your prediction\" required /><button class=\"primary\">Record Prediction</button></form><p class=\"small\">A prediction is a starting idea. You can investigate even if it turns out differently.</p>",
+    "main.move-top-ring": "Move Top Ring",
+    "main.move-top-layer": "Move Top ½ Layer",
+    "main.pallet-selected-choose-a-destination-select-it-again-to-cancel": "Pallet {{v0}} selected. Choose a destination; select it again to cancel.",
+    "main.drag-a-top-gear-to-another-pallet-or-select-a-source-and-destina": "Drag a top gear to another pallet. Or select a source and destination using the buttons below.",
+    "main.try-whole-rings": "Try Whole Rings",
+    "main.try-half-rings": "Try Half-Rings",
+    "main.pallet-current-load": "<button class=\"load\" data-pallet=\"{{v0}}\" aria-label=\"Pallet {{v1}}, current load {{v2}} units{{v3}}\" aria-pressed=\"{{v4}}\" {{v5}}><span class=\"pallet-name\">Pallet {{v6}}</span><span class=\"value\">{{v7}}</span><span class=\"label\">Current Load</span><span class=\"piece\">{{v8}}</span></button>",
+    "main.empty": ", empty",
+    "main.top-piece-unit-from": ", top piece {{v0}}, {{v1}} unit from {{v2}}",
+    "main.empty-pallet": "Empty Pallet",
+    "main.top": "Top: {{v0}}<br>{{v1}} {{v2}}",
+    "main.1-ring": "1 Ring",
+    "main.layer": "½ Layer",
+    "main.first-prediction-units-per-pallet": "First prediction: {{v0}} units per pallet",
+    "main.pallet-layout-review": "{{v0}}-Pallet Layout Review",
+    "main.pallet-2": "<div class=\"original-row\"><span><span class=\"identity\">{{v0}}</span> Pallet {{v1}}</span><strong>{{v2}}</strong></div>",
+    "main.text-3": "{{v0}} • {{v1}}",
+    "main.shipment-complete": "Shipment Complete",
+    "main.explain-the-equal-share": "Explain The Equal Share",
+    "main.connect-the-calculation": "Connect The Calculation",
+    "main.make-equal-shares": "Make Equal Shares",
+    "main.what-is-your-prediction": "What Is Your Prediction?",
+    "main.gear-movement-is-paused-at-this-step-use-reset-arrangement-to-re": "Gear movement is paused at this step. Use Reset Arrangement to return to sharing.",
+    "math-state.add-your-explanation-or-discussion-notes-before-finishing": "Add your explanation or discussion notes before finishing.",
+    "math-state.check-the-calculation-first": "Check the calculation first.",
+    "math-state.your-total-gears-pallet-count-and-mean-all-agree-with-the-equal": "Your total gears, pallet count, and mean all agree with the equal shares.",
+    "math-state.dispatch-equal-loads-before-calculating": "Dispatch equal loads before calculating.",
+    "math-state.divide-the-total-gears-by-the-number-of-pallets-keep-any-half-ge": "Divide the total gears by the number of pallets. Keep any half-gear.",
+    "math-state.count-the-labeled-pallets-not-the-gears-or-half-gears-each-origi": "Count the labeled pallets, not the gears or half-gears. Each original pallet counts once, even if it is empty.",
+    "math-state.recheck-the-total-gears-add-every-value-in-original-shipment-two": "Recheck the total gears: add every value in Original Shipment. Two halves count as one gear.",
+    "math-state.the-current-loads-are-compare-the-largest-and-smallest-loads-and": "The current loads are {{v0}}. Compare the largest and smallest loads and keep sharing.",
+    "math-state.equal-shares-all-original-cargo-is-accounted-for-now-connect-the": "Equal shares! All original cargo is accounted for. Now connect the model to a calculation.",
+    "math-state.there-is-no-move-to-undo": "There is no move to undo.",
+    "math-state.choose-a-whole-top-gear-or-either-of-the-highlighted-matching-to": "Choose a whole top gear or either of the highlighted matching top halves.",
+    "math-state.place-the-two-matching-halves-together-at-the-top-of-the-same-pa": "Place the two matching halves together at the top of the same pallet to merge them.",
+    "math-state.choose-a-whole-top-gear-to-split-into-halves": "Choose a whole top gear to split into halves.",
+    "math-state.this-pallet-is-empty-choose-a-pallet-with-cargo": "This pallet is empty. Choose a pallet with cargo.",
+    "math-state.choose-a-different-destination": "Choose a different destination.",
+    "math-state.enter-a-quantity-such-as-4-or-3-5": "Enter a quantity, such as 4 or 3.5.",
+    "math-state.your-first-prediction-is-already-recorded": "Your first prediction is already recorded.",
+    "math-state.choose-a-labeled-pallet": "Choose a labeled pallet.",
+    "math-state.gear-movement-is-paused-while-you-complete-this-step": "Gear movement is paused while you complete this step.",
+    "math-state.record-a-prediction-before-sharing": "Record a prediction before sharing.",
+    "math-state.wait-for-the-cargo-to-settle": "Wait for the cargo to settle.",
+    "math-state.invalid-piece": "Invalid piece.",
+    "math-state.original-quantity-was-not-conserved": "Original quantity was not conserved.",
+    "math-state.a-piece-occurs-more-than-once": "A piece occurs more than once.",
+    "math-state.every-original-observation-needs-one-pallet": "Every original observation needs one pallet.",
+    "math-state.choose-a-total-that-can-be-shared-equally-in-whole-or-half-gears": "Choose a total that can be shared equally in whole or half gears.",
+    "math-state.choose-one-to-six-pallets-with-whole-starting-gear-quantities": "Choose one to six pallets with whole starting gear quantities.",
+    "math-state.unknown-shipment": "Unknown shipment.",
+    "scene.the-3d-view-is-ready-again": "The 3D view is ready again.",
+    "scene.the-3d-view-paused-your-exact-quantities-are-safe-all-sharing-co": "The 3D view paused. Your exact quantities are safe; all sharing controls remain available.",
+    "scene.split-a-whole-top-gear-or-merge-its-matching-halves-together-at": "Split a whole top gear, or merge its matching halves together at the top of one pallet.",
+    "scene.drop-canceled-your-cargo-is-unchanged": "Drop canceled. Your cargo is unchanged.",
+    "scene.drop-canceled-choose-a-different-pallet-no-cargo-changed": "Drop canceled. Choose a different pallet; no cargo changed.",
+    "scene.gear-picked-up-drop-on-another-pallet-or-press-escape-to-cancel": "Gear picked up. Drop on another pallet, or press Escape to cancel.",
+    "scene.pickup-canceled-the-same-piece-returned-to-its-stack": "Pickup canceled. The same piece returned to its stack.",
+    "scene.drag-this-half-to-move-it-merging-needs-its-matching-half-beside": "Drag this half to move it. Merging needs its matching half beside it at the top.",
+    "scene.double-click-either-highlighted-half-to-merge-this-top-pair": "Double-click either highlighted half to merge this top pair.",
+    "scene.double-click-to-split-this-gear-drag-to-move-it": "Double-click to split this gear. Drag to move it.",
+    "scene.pickup-canceled": "Pickup canceled.",
+    "scene.pallet-current-load": "Pallet {{v0}} • Current Load",
+    "scene.text": "{{v0}}: {{v1}}",
+    "scene.pallet": "Pallet {{v0}}",
+    "scene.the-3d-view-is-unavailable-all-sharing-controls-remain-available": "The 3D view is unavailable. All sharing controls remain available.",
+    "answer-cues.next": "{{v0}} Next: {{v1}}.",
+    "answer-cues.ready": "✓ Ready",
+    "shell.mean-machine-equal-shares": "Mean Machine — Equal Shares",
+    "shell.the-foam-ring-factory": "The Foam-Ring Factory",
+    "shell.mean-machine": "Mean Machine",
+    "shell.reduce-motion": " Reduce Motion",
+    "shell.fullscreen": "Fullscreen",
+    "shell.reference": "Reference",
+    "shell.one-factory-two-ways-to-explore": "One Factory, Two Ways To Explore",
+    "shell.welcome-to-foam-works": "Welcome To Foam Works",
+    "shell.head-inside-to-share-colorful-cargo-equally-among-the-labeled-pa": "Head inside to share colorful cargo equally among the labeled pallets.",
+    "shell.enter-the-factory": "Enter The Factory",
+    "shell.skip-intro": "Skip Intro",
+    "shell.overview": "Overview",
+    "shell.front-view": "Front View",
+    "shell.original-shipment": "Original Shipment",
+    "shell.each-labeled-pallet-counts-once-one-whole-gear-is-one-unit-two-h": "Each labeled pallet counts once. One whole gear is one unit; two halves also make one unit.",
+    "shell.predict": "Predict",
+    "shell.share": "Share",
+    "shell.calculate": "Calculate",
+    "shell.explain": "Explain",
+    "shell.undo-move": "Undo Move",
+    "shell.reset-arrangement": "Reset Arrangement",
+    "shell.replay-shipment": "Replay Shipment",
+    "shell.try-half-rings": "Try Half-Rings",
+    "shell.try-6-pallet-example": "Try 6-Pallet Example",
+    "shell.factory-reference": "Factory Reference",
+    "shell.in-skimmer-statistics-each-recorded-trial-counts-once-repacking": "In skimmer statistics, each recorded trial counts once. Repacking this model does not change recorded flight distances.",
+    "shell.larger-layout-review": "Larger Layout Review",
+    "shell.these-fixed-examples-let-you-review-four-to-six-pallets-opening": "These fixed examples let you review four to six pallets. Opening one starts a new shipment. The two original lessons stay available through the shipment button.",
+    "shell.pallets-in-layout-review": "Pallets In Layout Review",
+    "shell.4-pallets": "4 Pallets",
+    "shell.5-pallets": "5 Pallets",
+    "shell.6-pallets": "6 Pallets",
+    "shell.open-layout-review": "Open Layout Review",
+    "shell.full-build-details": "Full Build Details",
+    "shell.close-reference": "Close Reference"
+  }
+}

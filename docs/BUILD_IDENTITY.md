@@ -46,3 +46,7 @@ The isolated `MeanMachine-drag-framing-review` checkout carries forward reservat
 ## Isolated JSON Retrofit
 
 `MeanMachine-json-review` uses independent local scope `local-20261005-json-018` and its own durable ledger. Source Build018 and its ledger remain untouched. Version `0.1.0` / Foam Rings remains the development milestone. Content schema `1.0.0` and revision `018.1` are separate metadata displayed under Reference → Editable Content. Validation runs before building; portable packages include author JSON/schema/instructions. The authoritative current review identity is `.build/latest.json` / `.build/CURRENT_BUILD.md`; see [Content Review](content/REVIEW.md).
+
+## October 9 Pages Promotion
+
+The current deployment record is [Verified Pages Release](../deployment/RELEASE.md) and its hash inventory. `site/` contains the existing identified artifact. The workflow verifies and copies it without a build, so no new ordinal or timestamp is allocated. The source SHA in the embedded manifest remains the original runtime source; the publication commit is separate provenance.
