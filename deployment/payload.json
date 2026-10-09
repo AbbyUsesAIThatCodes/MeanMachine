@@ -1,0 +1,88 @@
+{
+  "schema": 1,
+  "repo": "MeanMachine",
+  "buildId": "0.1.0_Foam-Rings_local-20261005-json-018_build-004_20261005T003616Z_g5ffbc607dbaf_web",
+  "runtimeRevision": "5ffbc607dbaf0756f980fd5a29c1a82072b6cd5e",
+  "policy": "Reuse exact runtime bytes and existing identity. No compilation, dependency installation, or new artifact ordinal. Exclude review exports and teacher material.",
+  "files": [
+    {
+      "path": "build-manifest.json",
+      "bytes": 723,
+      "sha256": "aff815d65812d483944c56a1756b8675c97784772a3c643713d1807ab2631694",
+      "origin": "unchanged reviewed artifact"
+    },
+    {
+      "path": "index.html",
+      "bytes": 5414,
+      "sha256": "c3208331b77312f139c1f8cd7d0e6d3e79756c17d3eca7f4bedbac5383c67b8d",
+      "origin": "unchanged reviewed artifact"
+    },
+    {
+      "path": "assets/index-DfgpmENB.css",
+      "bytes": 10250,
+      "sha256": "5a0c7de52c506b64cc47099d06b78a54b55aa974108d551752d950c1b573e14c",
+      "origin": "unchanged reviewed artifact"
+    },
+    {
+      "path": "assets/index-DxfLi78o.js",
+      "bytes": 691307,
+      "sha256": "b715db76827397db25719b185c6189665d065ddec2f4f972f0d468399f46809f",
+      "origin": "unchanged reviewed artifact"
+    },
+    {
+      "path": "content/ARCHITECTURE.md",
+      "bytes": 6036,
+      "sha256": "a5bceaf7a409cbcbc63d8b525784d81bec5e50b8aa48db4c1bd98fbe51a2099e",
+      "origin": "unchanged reviewed artifact"
+    },
+    {
+      "path": "content/AUTHORING.md",
+      "bytes": 8559,
+      "sha256": "0b281b7aac074bb9601b205f23ff1f8d14fd16ab246fcda4863402ffc2e19f86",
+      "origin": "unchanged reviewed artifact"
+    },
+    {
+      "path": "content/default.json",
+      "bytes": 18572,
+      "sha256": "527ef153a534a5fa7ce2896c47b51f84669ed20840d11e9135eccd1c3f48d366",
+      "origin": "unchanged reviewed artifact"
+    },
+    {
+      "path": "content/FIELD-CATALOG.md",
+      "bytes": 22828,
+      "sha256": "698517d0faa0c56017c62d21b648c38f727f032fee070394b13b4384102a9790",
+      "origin": "unchanged reviewed artifact"
+    },
+    {
+      "path": "content/REVIEW.md",
+      "bytes": 4850,
+      "sha256": "9ccc3e68b1dcdde3b6847bba63fbc4203d50bdc1fcb1808e4aca2a7c0bd10c09",
+      "origin": "unchanged reviewed artifact"
+    },
+    {
+      "path": "content/schema.json",
+      "bytes": 56454,
+      "sha256": "34dcfc18d1ca8541a6afc69c972aa790f0d958272e1c63662d3c395dfc561479",
+      "origin": "unchanged reviewed artifact"
+    },
+    {
+      "path": "licenses/three-LICENSE.txt",
+      "bytes": 1102,
+      "sha256": "5d5dad8147523d59bc15cca838ae0bdaae7075230ec49132c551a1d18e7b3412",
+      "origin": "unchanged reviewed artifact"
+    },
+    {
+      "path": "provenance/shared-world-lock.json",
+      "bytes": 1068,
+      "sha256": "45a2dbc442ad502529bf93c9b5a692f10b5ed8a091358ae5fde41bc3a3475edd",
+      "origin": "unchanged reviewed artifact"
+    },
+    {
+      "path": "provenance/shared-world-manifest.json",
+      "bytes": 1104,
+      "sha256": "fac0e1c44eac8e9aed0550778cc4dad3458b6aeff8b45fc0d788f9a53193f479",
+      "origin": "unchanged reviewed artifact"
+    }
+  ],
+  "manifest": "build-manifest.json"
+}

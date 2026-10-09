@@ -1,0 +1,9 @@
+{
+  "version": "0.1.0",
+  "codename": "Foam Rings",
+  "slug": "Foam-Rings",
+  "status": "development",
+  "scope": "local-20261005-json-018",
+  "target": "web",
+  "compatibility": "Development retrofit of tested 018; session-only learner state and original piece/activity IDs unchanged. Content schema 1.0.0 is independent of app version. No persistent learner saves or migrations."
+}

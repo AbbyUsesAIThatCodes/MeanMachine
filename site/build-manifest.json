@@ -1,0 +1,16 @@
+{
+  "version": "0.1.0",
+  "codename": "Foam Rings",
+  "slug": "Foam-Rings",
+  "status": "development",
+  "scope": "local-20261005-json-018",
+  "target": "web",
+  "compatibility": "Development retrofit of tested 018; session-only learner state and original piece/activity IDs unchanged. Content schema 1.0.0 is independent of app version. No persistent learner saves or migrations.",
+  "id": "0.1.0_Foam-Rings_local-20261005-json-018_build-004_20261005T003616Z_g5ffbc607dbaf_web",
+  "ordinal": 4,
+  "builtAt": "2026-10-05T00:36:16.336Z",
+  "revision": "5ffbc607dbaf0756f980fd5a29c1a82072b6cd5e",
+  "dirty": false,
+  "fingerprint": "e55d791b236face71c2c285ebe715fedbb31b8d239cd3df94bbff6cc14d594ee",
+  "mode": "production"
+}

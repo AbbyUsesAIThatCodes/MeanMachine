@@ -1,0 +1,33 @@
+{
+  "status": "passed",
+  "checkedAt": "2026-10-09T01:16:19.724670+00:00",
+  "buildId": "0.1.0_Foam-Rings_local-20261005-json-018_build-004_20261005T003616Z_g5ffbc607dbaf_web",
+  "runtimeRevision": "5ffbc607dbaf0756f980fd5a29c1a82072b6cd5e",
+  "artifactReused": true,
+  "environment": "Abigail; installed Edge; isolated temporary profiles; software WebGL where applicable",
+  "checks": {
+    "modelTests": 33,
+    "hostedBrowserCases": 52,
+    "offlineRecheckCases": 2,
+    "browserCasesTotal": 54,
+    "evidence": [
+      {
+        "file": "MeanMachine-unit.txt",
+        "sha256": "f54428424cfcd67381933719ad56ae83afa15e9f2d4ae49f9ae6d0c9d2fb6fdb"
+      },
+      {
+        "file": "MeanMachine-browser.json",
+        "sha256": "789eee71a6f4f635164cbf88322a36e645a3eb11e27dcc2ef4d8ac4df2dd2b7f"
+      },
+      {
+        "file": "MeanMachine-offline-recheck.json",
+        "sha256": "dd388acab18000afdc1598ec5f98d3ce59befa5818aa6cbe7b87ea41d9642227"
+      }
+    ],
+    "notes": "The first full browser run passed 52 hosted cases. Two offline cases required the preserved archive/latest manifest in this isolated clone; both passed after copying the unchanged original artifact. No game fix or rebuild."
+  },
+  "limits": [
+    "No managed school-device or physical apparatus acceptance claimed.",
+    "Source/artifact identities are preserved; publication commit is separate provenance."
+  ]
+}
